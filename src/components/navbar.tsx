@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   Navbar as NextUINavbar,
   NavbarBrand,
@@ -8,6 +9,8 @@ import {
   NavbarMenuItem,
   Button,
 } from "@nextui-org/react";
+import { ConnectButton } from "@mysten/dapp-kit";
+
 import clsx from "clsx";
 import { useLocation, Link as RouterLink } from "react-router-dom";
 
@@ -15,12 +18,19 @@ import { siteConfig } from "@/config/site";
 
 export const Navbar = () => {
   const location = useLocation();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  const closeMenu = () => {
+    setIsMenuOpen(false);
+  };
 
   return (
     <NextUINavbar
       maxWidth="xl"
       position="sticky"
-      className="bg-black h-24 flex items-center "
+      className="bg-black h-24 flex items-center text-[#716C6C]"
+      isMenuOpen={isMenuOpen}
+      onMenuOpenChange={setIsMenuOpen}
     >
       <NavbarContent className="basis-1/5 sm:basis-full justify-start items-center h-full">
         <NavbarBrand className="gap-3 max-w-fit">
@@ -53,7 +63,7 @@ export const Navbar = () => {
                 to={item.href}
                 className={clsx(
                   "data-[active=true]:text-white data-[active=true]:font-medium",
-                  "text-[#716C6C] hover:text-white",
+                  "hover:text-white",
                   "text-4xl"
                 )}
                 data-active={location.pathname === item.href}
@@ -69,9 +79,18 @@ export const Navbar = () => {
         className="hidden sm:flex basis-1/5 sm:basis-full justify-end items-center h-full"
         justify="end"
       >
-        <Button className="bg-[#FB0C0C] text-white text-2xl font-bold px-6 py-2 rounded-lg">
-          Connect Wallet
-        </Button>
+        <div className="flex mr-8">
+          <div className="text-xl">
+            <div className="label">Current Users: </div>
+            <span className="text-white font-bold">192k+</span>
+          </div>
+          <div className="h-12 w-[2px] bg-[#787878] mx-6"></div>
+          <div className="text-xl ">
+            <div className="label">States: </div>
+            <span className="font-bold text-green-500">19+</span>
+          </div>
+        </div>
+        <ConnectButton className="bg-[#FB0C0C] text-white text-2xl font-bold px-6 py-2 rounded-lg hover:bg-[#D80A0A] transition-colors duration-300" />
       </NavbarContent>
 
       <NavbarContent className="sm:hidden basis-1 pl-4" justify="end">
@@ -86,11 +105,12 @@ export const Navbar = () => {
                 to={item.href}
                 className={clsx(
                   "text-[#716C6C] hover:text-white",
-                  "text-4xl", // 添加这个类
+                  "text-4xl",
                   location.pathname === item.href
                     ? "text-white font-medium"
                     : ""
                 )}
+                onClick={closeMenu}
               >
                 {item.label}
               </RouterLink>

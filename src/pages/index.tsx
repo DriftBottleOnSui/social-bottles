@@ -1,58 +1,29 @@
-import { Link } from "@nextui-org/react";
-import { Snippet } from "@nextui-org/react";
-import { Code } from "@nextui-org/react";
-import { button as buttonStyles } from "@nextui-org/theme";
-
-import { siteConfig } from "@/config/site";
-import { title, subtitle } from "@/components/primitives";
-import { GithubIcon } from "@/components/icons";
 import DefaultLayout from "@/layouts/default";
+import { WalletStatus } from "@/components/WalletStatus";
 
 export default function IndexPage() {
   return (
     <DefaultLayout>
-      <section className="flex flex-col items-center justify-center gap-4 py-8 md:py-10">
-        <div className="inline-block max-w-lg text-center justify-center">
-          <h1 className={title()}>Make&nbsp;</h1>
-          <h1 className={title({ color: "violet" })}>beautiful&nbsp;</h1>
-          <br />
-          <h1 className={title()}>
-            websites regardless of your design experience.
-          </h1>
-          <h4 className={subtitle({ class: "mt-4" })}>
-            Beautiful, fast and modern React UI library.
-          </h4>
-        </div>
-
-        <div className="flex gap-3">
-          <Link
-            isExternal
-            className={buttonStyles({
-              color: "primary",
-              radius: "full",
-              variant: "shadow",
-            })}
-            href="/bottles"
-          >
-            Documentation
-          </Link>
-          <Link
-            isExternal
-            className={buttonStyles({ variant: "bordered", radius: "full" })}
-            href="/state"
-          >
-            <GithubIcon size={20} />
-            GitHub
-          </Link>
-        </div>
-
-        <div className="mt-8">
-          <Snippet hideCopyButton hideSymbol variant="bordered">
-            <span>
-              Get started by editing{" "}
-              <Code color="primary">pages/index.tsx</Code>
-            </span>
-          </Snippet>
+      <section className="flex flex-col items-center justify-center gap-4 py-8 md:py-10 ">
+        <div
+          className="mint-form w-full max-w-2xl aspect-[25/19] bg-contain bg-no-repeat bg-center rounded-lg overflow-hidden relative"
+          style={{
+            backgroundImage: `url(/images/home-bg.png)`,
+          }}
+        >
+          <div className="form-container h-full p-16 bg-transparent">
+            <div
+              className="title w-full h-24 bg-contain bg-no-repeat bg-center flex items-center justify-center"
+              style={{
+                backgroundImage: `url(/images/title-bg.svg)`,
+              }}
+            >
+              <h1 className="text-white text-center text-2xl font-bold">
+                Mint your NFT
+              </h1>
+            </div>
+            <WalletStatus />
+          </div>
         </div>
       </section>
     </DefaultLayout>

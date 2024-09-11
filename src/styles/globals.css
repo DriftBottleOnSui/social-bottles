@@ -22,3 +22,12 @@ html {
 .navbar-menu-toggle:hover {
   color: #fff !important;
 }
+
+:root {
+  button[data-dapp-kit] {
+    --dapp-kit-backgroundColors-primaryButton: #fb0c0c;
+    --dapp-kit-backgroundColors-primaryButtonHover: #d80a0a;
+    --dapp-kit-colors-body: #fff;
+    --dapp-kit-colors-primaryButton: #fff;
+  }
+}
