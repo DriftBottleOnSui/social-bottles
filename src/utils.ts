@@ -29,10 +29,37 @@ export function createBottleTransaction(blobId: string, txId: string) {
   return tx;
 }
 
+export async function checkTextWithAI(text: string): Promise<{
+  isAcceptable: boolean;
+  suggestions: string | null;
+}> {
+  const response = await fetch("https://ai-as-api.lerry.me", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ text }),
+  });
+
+  const result = (await response.json()) as {
+    assessment: "适当" | "不适当";
+    suggestions: string | null;
+  } | null;
+
+  if (!result) {
+    throw new Error("AI 检查失败");
+  }
+
+  return {
+    isAcceptable: result.assessment === "适当",
+    suggestions: result.suggestions,
+  };
+}
+
 export function replyBottleTransaction(
   bottleId: string,
   blobId: string,
-  txId: string,
+  txId: string
 ) {
   const tx = new Transaction();
 
@@ -65,7 +92,7 @@ export async function storeBlob(inputFile: File | string) {
     {
       method: "PUT",
       body: inputFile,
-    },
+    }
   );
 
   if (response.status === 200) {

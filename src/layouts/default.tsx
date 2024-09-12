@@ -10,9 +10,7 @@ export default function DefaultLayout({
   return (
     <div className="relative flex flex-col h-screen">
       <Navbar />
-      <main className="container mx-auto max-w-7xl px-2 md:px-6 flex-grow pt-16">
-        {children}
-      </main>
+      <main className="container flex-grow ">{children}</main>
       <Toaster />
     </div>
   );

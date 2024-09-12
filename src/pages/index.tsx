@@ -12,7 +12,7 @@ import {
 } from "@mysten/dapp-kit";
 import { useMutation } from "@tanstack/react-query";
 
-import { storeBlob, createBottleTransaction } from "@/utils";
+import { storeBlob, createBottleTransaction, checkTextWithAI } from "@/utils";
 import DefaultLayout from "@/layouts/default";
 
 // import { WalletStatus } from "@/components/WalletStatus";
@@ -72,7 +72,7 @@ const CustomButton = React.forwardRef<HTMLButtonElement, CustomButtonProps>(
         {props.children}
       </NextUIButton>
     );
-  },
+  }
 );
 
 CustomButton.displayName = "CustomButton";
@@ -85,6 +85,7 @@ export default function IndexPage() {
 
   const [mintText, setMintText] = useState("I am very ok");
   const [mintImage, setMintImage] = useState<File | null>(null);
+  const [aiSuggestion, setAiSuggestion] = useState<string | null>(null);
 
   const { mutate: storeObject, isPending } = useMutation({
     mutationFn: storeBlob,
@@ -105,11 +106,11 @@ export default function IndexPage() {
           onSuccess: (result) => {
             console.log(
               "successed create pool and stream, digest :",
-              result.digest,
+              result.digest
             );
             toast.success("successed create pool and stream");
           },
-        },
+        }
       );
     },
     onError: (error) => {
@@ -122,6 +123,18 @@ export default function IndexPage() {
     if (isPending) return;
 
     if (mintText) {
+      try {
+        const checkResult = await checkTextWithAI(mintText);
+        if (!checkResult.isAcceptable) {
+          setAiSuggestion(checkResult.suggestions);
+          toast.error("文本内容不适合，请查看建议并修改。");
+          return;
+        }
+      } catch (error) {
+        console.error("AI 检查失败:", error);
+        toast.error("AI 检查失败，请稍后重试。");
+        return;
+      }
       console.log("mintText", mintText);
       storeObject(mintText);
     }
@@ -133,74 +146,82 @@ export default function IndexPage() {
 
   return (
     <DefaultLayout>
-      <section
-        className="flex flex-col items-center justify-center gap-4 py-8 md:py-10 bg-cover bg-no-repeat bg-center"
-        style={{
-          backgroundImage: `url(/images/home-bg.png)`,
-        }}
-      >
-        <div
-          className="mint-form w-full max-w-2xl aspect-[25/19] bg-contain bg-no-repeat bg-center rounded-lg overflow-hidden relative"
+      <div className="container mx-auto max-w-7xl px-2 md:px-6 pt-16">
+        <section
+          className="flex flex-col items-center justify-center gap-4 py-8 md:py-10 bg-cover bg-no-repeat bg-center "
           style={{
-            backgroundImage: `url(/images/form-bg.png)`,
+            backgroundImage: `url(/images/home-bg.png)`,
           }}
         >
-          <div className="form-container h-full p-[8%] bg-transparent">
-            <div
-              className="title w-full bg-contain bg-no-repeat bg-center flex items-center justify-center py-4"
-              style={{
-                backgroundImage: `url(/images/title-bg.svg)`,
-              }}
-            >
-              <h1 className="text-white text-center text-2xl font-bold">
-                Mint Bottles
-              </h1>
-            </div>
-            {/* <WalletStatus /> */}
-            <div className="flex flex-col gap-2">
-              <div className="flex flex-col">
-                <label htmlFor="mint-amount">Description</label>
-                <Input
-                  id="mint-amount"
-                  value={mintText}
-                  onChange={(e) => setMintText(e.target.value)}
-                />
+          <div
+            className="mint-form w-full max-w-2xl aspect-[25/19] bg-contain bg-no-repeat bg-center rounded-lg overflow-hidden relative"
+            style={{
+              backgroundImage: `url(/images/form-bg.png)`,
+            }}
+          >
+            <div className="form-container h-full p-[8%] bg-transparent">
+              <div
+                className="title w-full bg-contain bg-no-repeat bg-center flex items-center justify-center py-4"
+                style={{
+                  backgroundImage: `url(/images/title-bg.svg)`,
+                }}
+              >
+                <h1 className="text-white text-center text-2xl font-bold">
+                  Mint Bottles
+                </h1>
               </div>
-              <p className="text-center">Or</p>
-              <div className="flex flex-col">
-                <label htmlFor="mint-amount">Upload Image</label>
-                <Input
-                  accept="image/*"
-                  id="mint-amount"
-                  type="file"
-                  onChange={(e) => {
-                    const file = e.target.files?.[0];
+              {/* <WalletStatus /> */}
+              <div className="flex flex-col gap-2">
+                <div className="flex flex-col">
+                  <label htmlFor="mint-amount">Description</label>
+                  <Input
+                    id="mint-amount"
+                    value={mintText}
+                    onChange={(e) => {
+                      setMintText(e.target.value);
+                      setAiSuggestion(null); // 清除之前的建议
+                    }}
+                  />
+                </div>
+                {aiSuggestion && (
+                  <p className="text-red-500 text-sm mt-1">{aiSuggestion}</p>
+                )}
+                <p className="text-center">Or</p>
+                <div className="flex flex-col">
+                  <label htmlFor="mint-amount">Upload Image</label>
+                  <Input
+                    accept="image/*"
+                    id="mint-amount"
+                    type="file"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
 
-                    if (file) setMintImage(file);
-                  }}
-                />
+                      if (file) setMintImage(file);
+                    }}
+                  />
+                </div>
               </div>
-            </div>
 
-            {!isConnected ? (
-              <ConnectModal
-                open={open}
-                trigger={
-                  <CustomButton isDisabled={!!currentAccount}>
-                    {" "}
-                    {currentAccount ? "Connected" : "Connect"}
-                  </CustomButton>
-                }
-                onOpenChange={(isOpen) => setOpen(isOpen)}
-              />
-            ) : (
-              <CustomButton isLoading={isPending} onClick={handleMint}>
-                {isPending ? "Minting..." : "Mint"}
-              </CustomButton>
-            )}
+              {!isConnected ? (
+                <ConnectModal
+                  open={open}
+                  trigger={
+                    <CustomButton isDisabled={!!currentAccount}>
+                      {" "}
+                      {currentAccount ? "Connected" : "Connect"}
+                    </CustomButton>
+                  }
+                  onOpenChange={(isOpen) => setOpen(isOpen)}
+                />
+              ) : (
+                <CustomButton isLoading={isPending} onClick={handleMint}>
+                  {isPending ? "Minting..." : "Mint"}
+                </CustomButton>
+              )}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      </div>
     </DefaultLayout>
   );
 }
