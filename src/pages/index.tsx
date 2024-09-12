@@ -1,23 +1,39 @@
 import React, { useState } from "react";
-import DefaultLayout from "@/layouts/default";
 import {
   Button as NextUIButton,
   ButtonProps as NextUIButtonProps,
 } from "@nextui-org/react";
+import toast from "react-hot-toast";
+import {
+  ConnectModal,
+  useCurrentWallet,
+  useCurrentAccount,
+  useSignAndExecuteTransaction,
+} from "@mysten/dapp-kit";
+import { useMutation } from "@tanstack/react-query";
+
+import { storeBlob, createBottleTransaction } from "@/utils";
+import DefaultLayout from "@/layouts/default";
 
 // import { WalletStatus } from "@/components/WalletStatus";
-import { useCurrentWallet } from "@mysten/dapp-kit";
-
-import { ConnectModal, useCurrentAccount } from "@mysten/dapp-kit";
-
 interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {}
-
-interface CustomButtonProps extends NextUIButtonProps {
-  // 如果需要添加额外的属性，可以在这里定义
-}
+interface CustomButtonProps extends NextUIButtonProps {}
 
 function Input(props: InputProps) {
   const isFileInput = props.type === "file";
+  const [fileName, setFileName] = useState<string>("");
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+
+    if (file) {
+      setFileName(file.name);
+      if (props.onChange) {
+        props.onChange(e);
+      }
+    }
+  };
+
   return (
     <div className="relative w-full h-16">
       <input
@@ -27,13 +43,14 @@ function Input(props: InputProps) {
           backgroundImage: isFileInput ? "none" : `url(/images/input-bg.svg)`,
           ...props.style,
         }}
+        onChange={isFileInput ? handleFileChange : props.onChange}
       />
       {isFileInput && (
         <div
           className="absolute inset-0 flex items-center px-4 bg-contain bg-no-repeat bg-center"
           style={{ backgroundImage: `url(/images/input-bg.svg)` }}
         >
-          <span className="text-gray-500"></span>
+          <span className="text-gray-500">{fileName || "Choose a file"}</span>
         </div>
       )}
     </div>
@@ -55,7 +72,7 @@ const CustomButton = React.forwardRef<HTMLButtonElement, CustomButtonProps>(
         {props.children}
       </NextUIButton>
     );
-  }
+  },
 );
 
 CustomButton.displayName = "CustomButton";
@@ -64,6 +81,56 @@ export default function IndexPage() {
   const { isConnected } = useCurrentWallet();
   const currentAccount = useCurrentAccount();
   const [open, setOpen] = useState(false);
+  const { mutate: signAndExecuteTransaction } = useSignAndExecuteTransaction();
+
+  const [mintText, setMintText] = useState("I am very ok");
+  const [mintImage, setMintImage] = useState<File | null>(null);
+
+  const { mutate: storeObject, isPending } = useMutation({
+    mutationFn: storeBlob,
+    onSuccess: (data) => {
+      console.log("存储成功:", data);
+      const tx = createBottleTransaction(data.blobId, data.objectId);
+
+      console.log("tx", tx);
+      signAndExecuteTransaction(
+        {
+          transaction: tx,
+        },
+        {
+          onError: (err: Error) => {
+            console.error(err.message);
+            toast.error(err.message);
+          },
+          onSuccess: (result) => {
+            console.log(
+              "successed create pool and stream, digest :",
+              result.digest,
+            );
+            toast.success("successed create pool and stream");
+          },
+        },
+      );
+    },
+    onError: (error) => {
+      console.log("error", error);
+      toast.error(error.message);
+    },
+  });
+
+  const handleMint = async () => {
+    if (isPending) return;
+
+    if (mintText) {
+      console.log("mintText", mintText);
+      storeObject(mintText);
+    }
+    if (mintImage) {
+      console.log("mintImage", mintImage);
+      storeObject(mintImage);
+    }
+  };
+
   return (
     <DefaultLayout>
       <section
@@ -93,29 +160,43 @@ export default function IndexPage() {
             <div className="flex flex-col gap-2">
               <div className="flex flex-col">
                 <label htmlFor="mint-amount">Description</label>
-                <Input id="mint-amount" />
+                <Input
+                  id="mint-amount"
+                  value={mintText}
+                  onChange={(e) => setMintText(e.target.value)}
+                />
               </div>
               <p className="text-center">Or</p>
               <div className="flex flex-col">
                 <label htmlFor="mint-amount">Upload Image</label>
-                <Input id="mint-amount" type="file" accept="image/*" />
+                <Input
+                  accept="image/*"
+                  id="mint-amount"
+                  type="file"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+
+                    if (file) setMintImage(file);
+                  }}
+                />
               </div>
             </div>
-            {/* className="w-full bg-[#fb0c0c] text-white hover:bg-[#d80a0a]" */}
 
             {!isConnected ? (
               <ConnectModal
+                open={open}
                 trigger={
                   <CustomButton isDisabled={!!currentAccount}>
                     {" "}
                     {currentAccount ? "Connected" : "Connect"}
                   </CustomButton>
                 }
-                open={open}
                 onOpenChange={(isOpen) => setOpen(isOpen)}
               />
             ) : (
-              <CustomButton>Mint</CustomButton>
+              <CustomButton isLoading={isPending} onClick={handleMint}>
+                {isPending ? "Minting..." : "Mint"}
+              </CustomButton>
             )}
           </div>
         </div>

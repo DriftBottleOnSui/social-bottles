@@ -1,3 +1,5 @@
+import { Toaster } from "react-hot-toast";
+
 import { Navbar } from "@/components/navbar";
 
 export default function DefaultLayout({
@@ -11,6 +13,7 @@ export default function DefaultLayout({
       <main className="container mx-auto max-w-7xl px-2 md:px-6 flex-grow pt-16">
         {children}
       </main>
+      <Toaster />
     </div>
   );
 }

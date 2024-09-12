@@ -9,11 +9,10 @@ import {
   NavbarMenuItem,
 } from "@nextui-org/react";
 import { ConnectButton } from "@mysten/dapp-kit";
-
 import clsx from "clsx";
 import { useLocation, Link as RouterLink } from "react-router-dom";
 
-import { siteConfig } from "@/config/site";
+import siteConfig from "@/config";
 
 export const Navbar = () => {
   const location = useLocation();
@@ -25,23 +24,23 @@ export const Navbar = () => {
 
   return (
     <NextUINavbar
-      maxWidth="xl"
-      position="sticky"
       className="bg-black h-24 flex items-center text-[#716C6C]"
       isMenuOpen={isMenuOpen}
+      maxWidth="xl"
+      position="sticky"
       onMenuOpenChange={setIsMenuOpen}
     >
       <NavbarContent className="basis-1/5 sm:basis-full justify-start items-center h-full">
         <NavbarBrand className="gap-3 max-w-fit">
           <RouterLink
-            to="/"
             className="flex justify-start items-center gap-1 text-foreground"
+            to="/"
           >
             <div className="h-16 w-16 flex items-center justify-center">
               <img
-                src="/logo.png"
                 alt="logo"
                 className="max-h-full max-w-full object-contain"
+                src="/logo.png"
               />
             </div>
           </RouterLink>
@@ -50,22 +49,22 @@ export const Navbar = () => {
           {siteConfig.navItems.map((item) => (
             <NavbarItem
               key={item.href}
-              isActive={location.pathname === item.href}
               className={clsx(
                 "pt-6",
                 "relative",
                 location.pathname === item.href &&
-                  "after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-[3px] after:bg-[#FB0C0C]"
+                  "after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-[3px] after:bg-[#FB0C0C]",
               )}
+              isActive={location.pathname === item.href}
             >
               <RouterLink
-                to={item.href}
                 className={clsx(
                   "data-[active=true]:text-white data-[active=true]:font-medium",
                   "hover:text-white",
-                  "text-4xl"
+                  "text-4xl",
                 )}
                 data-active={location.pathname === item.href}
+                to={item.href}
               >
                 {item.label}
               </RouterLink>
@@ -83,7 +82,7 @@ export const Navbar = () => {
             <div className="label">Current Users: </div>
             <span className="text-white font-bold">192k+</span>
           </div>
-          <div className="h-12 w-[2px] bg-[#787878] mx-6"></div>
+          <div className="h-12 w-[2px] bg-[#787878] mx-6" />
           <div className="text-xl ">
             <div className="label">States: </div>
             <span className="font-bold text-green-500">19+</span>
@@ -101,14 +100,14 @@ export const Navbar = () => {
           {siteConfig.navItems.map((item, index) => (
             <NavbarMenuItem key={`${item}-${index}`}>
               <RouterLink
-                to={item.href}
                 className={clsx(
                   "text-[#716C6C] hover:text-white",
                   "text-4xl",
                   location.pathname === item.href
                     ? "text-white font-medium"
-                    : ""
+                    : "",
                 )}
+                to={item.href}
                 onClick={closeMenu}
               >
                 {item.label}
