@@ -86,6 +86,7 @@ export default function IndexPage() {
   const [mintText, setMintText] = useState("I am very ok");
   const [mintImage, setMintImage] = useState<File | null>(null);
   const [aiSuggestion, setAiSuggestion] = useState<string | null>(null);
+  const [isChecking, setIsChecking] = useState(false);
 
   const { mutate: storeObject, isPending } = useMutation({
     mutationFn: storeBlob,
@@ -123,17 +124,22 @@ export default function IndexPage() {
     if (isPending) return;
 
     if (mintText) {
-      try {
-        const checkResult = await checkTextWithAI(mintText);
-        if (!checkResult.isAcceptable) {
-          setAiSuggestion(checkResult.suggestions);
-          toast.error("文本内容不适合，请查看建议并修改。");
+      if (process.env.NODE_ENV === "production") {
+        try {
+          setIsChecking(true);
+          const checkResult = await checkTextWithAI(mintText);
+          if (!checkResult.isAcceptable) {
+            setAiSuggestion(checkResult.suggestions);
+            toast.error("文本内容不适合，请查看建议并修改。");
+            return;
+          }
+        } catch (error) {
+          console.error("AI 检查失败:", error);
+          toast.error("AI 检查失败，请稍后重试。");
           return;
+        } finally {
+          setIsChecking(false);
         }
-      } catch (error) {
-        console.error("AI 检查失败:", error);
-        toast.error("AI 检查失败，请稍后重试。");
-        return;
       }
       console.log("mintText", mintText);
       storeObject(mintText);
@@ -214,7 +220,10 @@ export default function IndexPage() {
                   onOpenChange={(isOpen) => setOpen(isOpen)}
                 />
               ) : (
-                <CustomButton isLoading={isPending} onClick={handleMint}>
+                <CustomButton
+                  isLoading={isPending || isChecking}
+                  onClick={handleMint}
+                >
                   {isPending ? "Minting..." : "Mint"}
                 </CustomButton>
               )}

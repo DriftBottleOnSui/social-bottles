@@ -1,7 +1,9 @@
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Transaction } from "@mysten/sui/transactions";
-
 import siteConfig from "./config";
+import BottleImageType1 from "/images/bottles/1.png";
+import BottleImageType2 from "/images/bottles/2.png";
+import BottleImageType3 from "/images/bottles/3.png";
 
 const WALRUS_PUBLISHER_URL = siteConfig.WALRUS_PUBLISHER_URL;
 const WALRUS_AGGREGATOR_URL = siteConfig.WALRUS_AGGREGATOR_URL;
@@ -10,10 +12,22 @@ const numEpochs = 1;
 const CONTRACT_ADDRESS =
   "0x3b40d2a1fc18cfc485ca14bbf30a8bebb2c1913ed6fc05299ea30afeeeb99bf7";
 
-// const EventType = `${CONTRACT_ADDRESS}::drift_bottle::BottleEvent`;
+export const EventType = `${CONTRACT_ADDRESS}::drift_bottle::BottleEvent`;
 const CreateBottleMethod = `${CONTRACT_ADDRESS}::drift_bottle::createBottle`;
 const ReplyBottleMethod = `${CONTRACT_ADDRESS}::drift_bottle::openAndReplyBottle`;
 
+export function getBottleImage(id: string) {
+  // 把0x开头的16进制对象id（"0x63afaa8cef0a2d75fa5601c3b5075e705e854825db516278c1c79987938e32d0"）映射到1-3
+  const idNum = parseInt(id.slice(2), 16) % 3;
+  switch (idNum) {
+    case 0:
+      return BottleImageType1;
+    case 1:
+      return BottleImageType2;
+    case 2:
+      return BottleImageType3;
+  }
+}
 export function createBottleTransaction(blobId: string, txId: string) {
   const tx = new Transaction();
 

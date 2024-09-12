@@ -5,14 +5,13 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 import { networkConfig } from "./networkConfig";
 const queryClient = new QueryClient();
-
 export function Provider({ children }: { children: React.ReactNode }) {
   const navigate = useNavigate();
 
   return (
     <NextUIProvider navigate={navigate}>
       <QueryClientProvider client={queryClient}>
-        <SuiClientProvider defaultNetwork="devnet" networks={networkConfig}>
+        <SuiClientProvider defaultNetwork="testnet" networks={networkConfig}>
           <WalletProvider autoConnect>{children}</WalletProvider>
         </SuiClientProvider>
       </QueryClientProvider>
