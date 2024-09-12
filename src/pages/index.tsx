@@ -7,7 +7,6 @@ import {
 
 // import { WalletStatus } from "@/components/WalletStatus";
 import { useCurrentWallet } from "@mysten/dapp-kit";
-import { useConnectWallet } from "@mysten/dapp-kit";
 
 import { ConnectModal, useCurrentAccount } from "@mysten/dapp-kit";
 
@@ -63,7 +62,6 @@ CustomButton.displayName = "CustomButton";
 
 export default function IndexPage() {
   const { isConnected } = useCurrentWallet();
-  const { connect } = useConnectWallet();
   const currentAccount = useCurrentAccount();
   const [open, setOpen] = useState(false);
   return (
@@ -117,7 +115,7 @@ export default function IndexPage() {
                 onOpenChange={(isOpen) => setOpen(isOpen)}
               />
             ) : (
-              <CustomButton onClick={connect}>Mint</CustomButton>
+              <CustomButton>Mint</CustomButton>
             )}
           </div>
         </div>

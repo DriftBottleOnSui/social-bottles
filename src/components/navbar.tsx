@@ -7,7 +7,6 @@ import {
   NavbarMenuToggle,
   NavbarMenu,
   NavbarMenuItem,
-  Button,
 } from "@nextui-org/react";
 import { ConnectButton } from "@mysten/dapp-kit";
 
