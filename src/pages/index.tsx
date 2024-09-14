@@ -43,11 +43,11 @@ export default function IndexPage() {
           onSuccess: (result) => {
             console.log(
               "Successfully created pool and stream, digest :",
-              result.digest
+              result.digest,
             );
             toast.success("Successfully created pool and stream");
           },
-        }
+        },
       );
     },
     onError: (error) => {
@@ -65,11 +65,13 @@ export default function IndexPage() {
       try {
         setIsChecking(true);
         const checkResult = await checkTextWithAI(mintText);
+
         if (!checkResult.isAcceptable) {
           setAiSuggestion(checkResult.suggestions);
           toast.error(
-            "Text content is not suitable. Please review the suggestions and modify."
+            "Text content is not suitable. Please review the suggestions and modify.",
           );
+
           return;
         }
       } catch (error) {
@@ -82,16 +84,19 @@ export default function IndexPage() {
     if (mintImage) {
       if (mintImage.type !== "image/jpeg" && mintImage.type !== "image/png") {
         toast.error("Please upload a JPG or PNG image");
+
         return;
       }
       if (mintImage.size > 5 * 1024 * 1024) {
         toast.error("File size cannot exceed 5MB");
+
         return;
       }
       toStore.push(mintImage);
     }
     if (toStore.length === 0) {
       toast.error("Please enter text or upload an image");
+
       return;
     }
     storeObject(toStore);
@@ -148,6 +153,7 @@ export default function IndexPage() {
                     type="file"
                     onChange={(e) => {
                       const file = e.target.files?.[0];
+
                       if (file && file.size <= 5 * 1024 * 1024) {
                         setMintImage(file);
                       } else {

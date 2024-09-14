@@ -27,6 +27,7 @@ export type Bottle = {
   id: string;
   from: string;
   displayMsg: string;
+  createAt: string;
   msgs: {
     content: string;
     mediaType: string;

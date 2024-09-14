@@ -1,8 +1,11 @@
 import { Transaction } from "@mysten/sui/transactions";
+
 import siteConfig from "./config";
+
 import BottleImageType1 from "/images/bottles/1.png";
 import BottleImageType2 from "/images/bottles/2.png";
 import BottleImageType3 from "/images/bottles/3.png";
+
 import { Bottle } from "./types";
 
 const WALRUS_PUBLISHER_URL = siteConfig.WALRUS_PUBLISHER_URL;
@@ -18,10 +21,12 @@ const ReplyBottleMethod = `${CONTRACT_ADDRESS}::social_bottle::openAndReplyBottl
 
 export function getBottleImage(bottle: Bottle) {
   const bottleImg = bottle.msgs.find((msg) => msg.mediaType === "image");
+
   if (bottleImg) {
     return bottleImg.content;
   }
   const idNum = parseInt(bottle.id.slice(2), 16) % 3;
+
   switch (idNum) {
     case 0:
       return BottleImageType1;
@@ -36,11 +41,12 @@ export function createBottleTransaction(
   toCreate: {
     blobId: string;
     objectId: string;
-  }[]
+  }[],
 ) {
   const tx = new Transaction();
   const blobIds = toCreate.map((item) => item.blobId);
   const objIds = toCreate.map((item) => item.objectId);
+
   tx.moveCall({
     target: CreateBottleMethod,
     arguments: [
@@ -85,7 +91,7 @@ export async function checkTextWithAI(text: string): Promise<{
 export function replyBottleTransaction(
   bottleId: string,
   blobId: string,
-  txId: string
+  txId: string,
 ) {
   const tx = new Transaction();
 
@@ -109,14 +115,17 @@ function cacheWithSessionStorageDecorator<
   return (async (...args: Parameters<T>) => {
     const key = `${fn.name}-${JSON.stringify(args)}`;
     const cachedValue = sessionStorage.getItem(key);
+
     if (cachedValue) {
       return JSON.parse(cachedValue);
     }
     try {
       const value = await fn(...args);
+
       if (value !== null && value !== undefined) {
         sessionStorage.setItem(key, JSON.stringify(value));
       }
+
       return value;
     } catch (error) {
       console.error("请求失败，不缓存结果:", error);
@@ -154,12 +163,14 @@ export async function getBlob(id: string) {
     } else {
       // 如果不是图片，假设是文本，直接解码并返回内容
       const decoder = new TextDecoder();
+
       return {
         content: decoder.decode(buffer),
         mediaType: "text",
       };
     }
   }
+
   return null;
 }
 
@@ -194,6 +205,7 @@ export async function storeBlob(inputFiles: (File | string)[]) {
   try {
     const results = await Promise.all(promises);
     const returnData = [];
+
     for (const response of results) {
       if (response.status === 200) {
         // Parse successful responses as JSON, and return it along with the
@@ -210,7 +222,7 @@ export async function storeBlob(inputFiles: (File | string)[]) {
           returnData.push({
             blobId: info.alreadyCertified.blobId,
             objectId: await getObjectFromTx(
-              info.alreadyCertified.event.txDigest
+              info.alreadyCertified.event.txDigest,
             ),
           });
         } else {
@@ -218,6 +230,7 @@ export async function storeBlob(inputFiles: (File | string)[]) {
         }
       }
     }
+
     return returnData;
   } catch (error) {
     console.error("Error storing blobs:", error);

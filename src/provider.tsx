@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 import { networkConfig } from "./networkConfig";
 const queryClient = new QueryClient();
+
 export function Provider({ children }: { children: React.ReactNode }) {
   const navigate = useNavigate();
 

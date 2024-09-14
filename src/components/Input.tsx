@@ -14,6 +14,7 @@ function Input(props: InputProps) {
       if (file.size > 5 * 1024 * 1024) {
         toast.error("File size cannot exceed 5MB");
         e.target.value = "";
+
         return;
       }
       setFileName(file.name);
@@ -25,6 +26,7 @@ function Input(props: InputProps) {
 
   const handleTextChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const text = e.target.value;
+
     if (new Blob([text]).size <= 256) {
       if (props.onChange) {
         props.onChange(e);
@@ -40,12 +42,12 @@ function Input(props: InputProps) {
         {...props}
         accept={isFileInput ? "image/jpeg, image/png" : undefined}
         className={`w-full h-full bg-contain bg-no-repeat bg-center px-4 outline-none focus:outline-none border-none ${isFileInput ? "opacity-0 absolute inset-0 z-10 cursor-pointer" : ""} ${props.className || ""}`}
+        maxLength={256}
         style={{
           backgroundImage: isFileInput ? "none" : `url(/images/input-bg.svg)`,
           ...props.style,
         }}
         onChange={isFileInput ? handleFileChange : handleTextChange}
-        maxLength={256}
       />
       {isFileInput && (
         <div
