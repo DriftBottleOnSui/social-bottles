@@ -1,8 +1,4 @@
-import React, { useState } from "react";
-import {
-  Button as NextUIButton,
-  ButtonProps as NextUIButtonProps,
-} from "@nextui-org/react";
+import { useState } from "react";
 import toast from "react-hot-toast";
 import {
   ConnectModal,
@@ -14,68 +10,8 @@ import { useMutation } from "@tanstack/react-query";
 
 import { storeBlob, createBottleTransaction, checkTextWithAI } from "@/utils";
 import DefaultLayout from "@/layouts/default";
-
-// import { WalletStatus } from "@/components/WalletStatus";
-interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {}
-interface CustomButtonProps extends NextUIButtonProps {}
-
-function Input(props: InputProps) {
-  const isFileInput = props.type === "file";
-  const [fileName, setFileName] = useState<string>("");
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-
-    if (file) {
-      setFileName(file.name);
-      if (props.onChange) {
-        props.onChange(e);
-      }
-    }
-  };
-
-  return (
-    <div className="relative w-full h-16">
-      <input
-        {...props}
-        className={`w-full h-full bg-contain bg-no-repeat bg-center px-4 outline-none focus:outline-none border-none ${isFileInput ? "opacity-0 absolute inset-0 z-10 cursor-pointer" : ""} ${props.className || ""}`}
-        style={{
-          backgroundImage: isFileInput ? "none" : `url(/images/input-bg.svg)`,
-          ...props.style,
-        }}
-        onChange={isFileInput ? handleFileChange : props.onChange}
-      />
-      {isFileInput && (
-        <div
-          className="absolute inset-0 flex items-center px-4 bg-contain bg-no-repeat bg-center"
-          style={{ backgroundImage: `url(/images/input-bg.svg)` }}
-        >
-          <span className="text-gray-500">{fileName || "Choose a file"}</span>
-        </div>
-      )}
-    </div>
-  );
-}
-
-const CustomButton = React.forwardRef<HTMLButtonElement, CustomButtonProps>(
-  (props, ref) => {
-    return (
-      <NextUIButton
-        {...props}
-        ref={ref}
-        className={`h-16 w-full bg-transparent text-white bg-contain bg-no-repeat bg-center ${props.className || ""}`}
-        style={{
-          backgroundImage: `url(/images/button-bg.svg)`,
-          ...props.style,
-        }}
-      >
-        {props.children}
-      </NextUIButton>
-    );
-  }
-);
-
-CustomButton.displayName = "CustomButton";
+import Button from "@/components/Button";
+import Input from "@/components/Input";
 
 export default function IndexPage() {
   const { isConnected } = useCurrentWallet();
@@ -89,10 +25,10 @@ export default function IndexPage() {
   const [isChecking, setIsChecking] = useState(false);
 
   const { mutate: storeObject, isPending } = useMutation({
-    mutationFn: storeBlob,
+    mutationFn: (input: (File | string)[]) => storeBlob(input),
     onSuccess: (data) => {
-      console.log("存储成功:", data);
-      const tx = createBottleTransaction(data.blobId, data.objectId);
+      console.log("Storage successful:", data);
+      const tx = createBottleTransaction(data);
 
       console.log("tx", tx);
       signAndExecuteTransaction(
@@ -106,10 +42,10 @@ export default function IndexPage() {
           },
           onSuccess: (result) => {
             console.log(
-              "successed create pool and stream, digest :",
+              "Successfully created pool and stream, digest :",
               result.digest
             );
-            toast.success("successed create pool and stream");
+            toast.success("Successfully created pool and stream");
           },
         }
       );
@@ -123,31 +59,42 @@ export default function IndexPage() {
   const handleMint = async () => {
     if (isPending) return;
 
+    const toStore = [];
+
     if (mintText) {
-      if (process.env.NODE_ENV === "production") {
-        try {
-          setIsChecking(true);
-          const checkResult = await checkTextWithAI(mintText);
-          if (!checkResult.isAcceptable) {
-            setAiSuggestion(checkResult.suggestions);
-            toast.error("文本内容不适合，请查看建议并修改。");
-            return;
-          }
-        } catch (error) {
-          console.error("AI 检查失败:", error);
-          toast.error("AI 检查失败，请稍后重试。");
+      try {
+        setIsChecking(true);
+        const checkResult = await checkTextWithAI(mintText);
+        if (!checkResult.isAcceptable) {
+          setAiSuggestion(checkResult.suggestions);
+          toast.error(
+            "Text content is not suitable. Please review the suggestions and modify."
+          );
           return;
-        } finally {
-          setIsChecking(false);
         }
+      } catch (error) {
+        console.error("AI check failed:", error);
+      } finally {
+        setIsChecking(false);
       }
-      console.log("mintText", mintText);
-      storeObject(mintText);
+      toStore.push(mintText);
     }
     if (mintImage) {
-      console.log("mintImage", mintImage);
-      storeObject(mintImage);
+      if (mintImage.type !== "image/jpeg" && mintImage.type !== "image/png") {
+        toast.error("Please upload a JPG or PNG image");
+        return;
+      }
+      if (mintImage.size > 5 * 1024 * 1024) {
+        toast.error("File size cannot exceed 5MB");
+        return;
+      }
+      toStore.push(mintImage);
     }
+    if (toStore.length === 0) {
+      toast.error("Please enter text or upload an image");
+      return;
+    }
+    storeObject(toStore);
   };
 
   return (
@@ -185,7 +132,7 @@ export default function IndexPage() {
                     value={mintText}
                     onChange={(e) => {
                       setMintText(e.target.value);
-                      setAiSuggestion(null); // 清除之前的建议
+                      setAiSuggestion(null); // Clear previous suggestions
                     }}
                   />
                 </div>
@@ -196,13 +143,16 @@ export default function IndexPage() {
                 <div className="flex flex-col">
                   <label htmlFor="mint-amount">Upload Image</label>
                   <Input
-                    accept="image/*"
+                    accept="image/jpeg, image/png"
                     id="mint-amount"
                     type="file"
                     onChange={(e) => {
                       const file = e.target.files?.[0];
-
-                      if (file) setMintImage(file);
+                      if (file && file.size <= 5 * 1024 * 1024) {
+                        setMintImage(file);
+                      } else {
+                        toast.error("The file size must be less than 5MB");
+                      }
                     }}
                   />
                 </div>
@@ -212,20 +162,20 @@ export default function IndexPage() {
                 <ConnectModal
                   open={open}
                   trigger={
-                    <CustomButton isDisabled={!!currentAccount}>
+                    <Button isDisabled={!!currentAccount}>
                       {" "}
                       {currentAccount ? "Connected" : "Connect"}
-                    </CustomButton>
+                    </Button>
                   }
                   onOpenChange={(isOpen) => setOpen(isOpen)}
                 />
               ) : (
-                <CustomButton
+                <Button
                   isLoading={isPending || isChecking}
                   onClick={handleMint}
                 >
                   {isPending ? "Minting..." : "Mint"}
-                </CustomButton>
+                </Button>
               )}
             </div>
           </div>
