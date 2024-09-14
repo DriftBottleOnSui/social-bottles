@@ -43,11 +43,11 @@ export default function IndexPage() {
           onSuccess: (result) => {
             console.log(
               "Successfully created pool and stream, digest :",
-              result.digest,
+              result.digest
             );
             toast.success("Successfully created pool and stream");
           },
-        },
+        }
       );
     },
     onError: (error) => {
@@ -69,7 +69,7 @@ export default function IndexPage() {
         if (!checkResult.isAcceptable) {
           setAiSuggestion(checkResult.suggestions);
           toast.error(
-            "Text content is not suitable. Please review the suggestions and modify.",
+            "Text content is not suitable. Please review the suggestions and modify."
           );
 
           return;
@@ -131,7 +131,7 @@ export default function IndexPage() {
               {/* <WalletStatus /> */}
               <div className="flex flex-col gap-2">
                 <div className="flex flex-col">
-                  <label htmlFor="mint-amount">Description</label>
+                  <label htmlFor="mint-amount">Message</label>
                   <Input
                     id="mint-amount"
                     value={mintText}
@@ -144,9 +144,8 @@ export default function IndexPage() {
                 {aiSuggestion && (
                   <p className="text-red-500 text-sm mt-1">{aiSuggestion}</p>
                 )}
-                <p className="text-center">Or</p>
                 <div className="flex flex-col">
-                  <label htmlFor="mint-amount">Upload Image</label>
+                  <label htmlFor="mint-amount">Upload a picture</label>
                   <Input
                     accept="image/jpeg, image/png"
                     id="mint-amount"
