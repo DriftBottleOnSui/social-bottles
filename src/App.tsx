@@ -1,16 +1,20 @@
+import { Suspense, lazy } from "react";
 import { Route, Routes } from "react-router-dom";
 
-import IndexPage from "@/pages/index";
-import BottlesPage from "@/pages/bottles";
-import MorePage from "@/pages/more";
+// 动态导入页面组件
+const IndexPage = lazy(() => import("@/pages/index"));
+const BottlesPage = lazy(() => import("@/pages/bottles"));
+const MorePage = lazy(() => import("@/pages/more"));
 
 function App() {
   return (
-    <Routes>
-      <Route element={<IndexPage />} path="/" />
-      <Route element={<BottlesPage />} path="/bottles" />
-      <Route element={<MorePage />} path="/more" />
-    </Routes>
+    <Suspense fallback={<div>Loading...</div>}>
+      <Routes>
+        <Route element={<IndexPage />} path="/" />
+        <Route element={<BottlesPage />} path="/bottles" />
+        <Route element={<MorePage />} path="/more" />
+      </Routes>
+    </Suspense>
   );
 }
 
