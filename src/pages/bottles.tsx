@@ -8,6 +8,7 @@ import { Bottle } from "@/types";
 import BottleModal from "@/components/BottleModal";
 import MintForm from "@/components/mint-form";
 import { useBottles } from "@/hooks/useBottles";
+import toast from "react-hot-toast";
 
 function getFromId(bottle: Bottle) {
   const fromId = bottle.from;
@@ -48,6 +49,10 @@ export default function BottlesPage() {
   }, [isOpen]);
 
   const handleOpenBottle = (bottle: Bottle) => {
+    if (!currentAccount?.address) {
+      toast.error("Please connect your wallet");
+      return;
+    }
     setSelectedBottle(bottle);
     onOpen();
   };
