@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Skeleton, Button, useDisclosure } from "@nextui-org/react";
 import { ConnectButton, useCurrentAccount } from "@mysten/dapp-kit";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 
 import DefaultLayout from "@/layouts/default";
 import { getBottleImage } from "@/utils/storage";
