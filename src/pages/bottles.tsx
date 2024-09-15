@@ -1,15 +1,13 @@
 import { useEffect, useState } from "react";
-import dayjs from "dayjs";
-import { useSuiClient } from "@mysten/dapp-kit";
 import { Skeleton, Button, useDisclosure } from "@nextui-org/react";
 import { useCurrentAccount } from "@mysten/dapp-kit";
 
 import DefaultLayout from "@/layouts/default";
-import { getBottleImage, getBlobWithCache } from "@/utils/storage";
-import { EventType } from "@/utils/transaction";
-import { BottleIdObj, Bottle } from "@/types";
+import { getBottleImage } from "@/utils/storage";
+import { Bottle } from "@/types";
 import BottleModal from "@/components/BottleModal";
 import MintForm from "@/components/mint-form";
+import { useBottles } from "@/hooks/useBottles";
 
 function getFromId(bottle: Bottle) {
   const fromId = bottle.from;
@@ -17,44 +15,14 @@ function getFromId(bottle: Bottle) {
   return `${fromId.slice(0, 4)}...${fromId.slice(-4)}`;
 }
 
-async function toBottle(obj: any): Promise<Bottle> {
-  const msgIds = obj.data.content.fields.msgs.map(
-    (msg: any) => msg.fields.blob_id
-  );
-  const promises = msgIds.map((id: string) => getBlobWithCache(id));
-  const blobs = await Promise.all(promises);
-  const displayMsg =
-    blobs.find((blob) => blob.mediaType === "text")?.content || "";
-
-  // Convert timestamp to milliseconds
-  const timestamp = parseInt(obj.data.content.fields.from_time) * 1000;
-  const createAt = dayjs(timestamp).format("MMM D, YYYY h:mm A");
-
-  return {
-    id: obj.data.objectId,
-    from: obj.data.content.fields.from,
-    to: obj.data.content.fields.to,
-    displayMsg: displayMsg,
-    createAt: createAt,
-    msgs: blobs.map((blob: any) => ({
-      content: blob.content,
-      mediaType: blob.mediaType,
-    })),
-  };
-}
-
 export default function BottlesPage() {
-  const suiClient = useSuiClient();
   const currentAccount = useCurrentAccount();
 
   const [activeTab, setActiveTab] = useState("unread");
   const [filteredBottles, setFilteredBottles] = useState<Bottle[]>([]);
 
-  const [bottles, setBottles] = useState<Bottle[]>([]);
   const [selectedBottle, setSelectedBottle] = useState<Bottle | null>(null);
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
-  const [sentBottles, setSentBottles] = useState(0);
-  const [repliedBottles, setRepliedBottles] = useState(0);
 
   const handleReply = (message: string, image: File | null) => {
     console.log("Reply message:", message);
@@ -62,54 +30,7 @@ export default function BottlesPage() {
     // Add reply logic here
   };
 
-  useEffect(() => {
-    const fetchBottles = async () => {
-      // Get all bottle objectIds
-      const result = (await suiClient.queryEvents({
-        query: {
-          MoveEventType: EventType,
-        },
-        limit: 1000,
-      })) as {
-        data: BottleIdObj[];
-      };
-
-      const ids = new Set(result.data.map((obj) => obj.parsedJson.bottle_id));
-
-      // Get bottle data
-      const objs = await suiClient.multiGetObjects({
-        ids: Array.from(ids),
-        options: {
-          showPreviousTransaction: true,
-          showContent: true,
-        },
-      });
-
-      console.log(objs);
-      const bottles = await Promise.all(objs.map((obj) => toBottle(obj)));
-
-      console.log("bottles", bottles);
-
-      setBottles(bottles);
-
-      // Calculate sent and replied bottles
-      const sentCount = result.data.filter(
-        (obj) =>
-          obj.parsedJson.action_type === "create" &&
-          obj.parsedJson.from === currentAccount?.address
-      ).length;
-      const repliedCount = result.data.filter(
-        (obj) =>
-          obj.parsedJson.action_type === "reply" &&
-          obj.parsedJson.to === currentAccount?.address
-      ).length;
-
-      setSentBottles(sentCount);
-      setRepliedBottles(repliedCount);
-    };
-
-    fetchBottles();
-  }, [currentAccount]);
+  const { bottles, sentBottles, repliedBottles } = useBottles();
 
   useEffect(() => {
     // 根据activeTab过滤瓶子

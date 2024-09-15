@@ -11,6 +11,7 @@ import {
 import { ConnectButton } from "@mysten/dapp-kit";
 import clsx from "clsx";
 import { useLocation, Link as RouterLink } from "react-router-dom";
+import { useBottles } from "@/hooks/useBottles";
 
 import siteConfig from "@/config";
 
@@ -21,6 +22,9 @@ export const Navbar = () => {
   const closeMenu = () => {
     setIsMenuOpen(false);
   };
+  const { bottles } = useBottles();
+  const userCount = new Set(bottles.map((bottle) => bottle.from)).size;
+  const bottleCount = new Set(bottles.map((bottle) => bottle.id)).size;
 
   return (
     <NextUINavbar
@@ -79,12 +83,12 @@ export const Navbar = () => {
         <div className="flex mr-8">
           <div className="text-xl">
             <div className="label">Current Users: </div>
-            <span className="text-white font-bold">192k+</span>
+            <span className="text-white font-bold">{userCount}</span>
           </div>
           <div className="h-12 w-[2px] bg-[#787878] mx-6" />
           <div className="text-xl ">
             <div className="label">States: </div>
-            <span className="font-bold text-green-500">19+</span>
+            <span className="font-bold text-green-500">{bottleCount}</span>
           </div>
         </div>
         <ConnectButton className="bg-[#FB0C0C] text-white text-2xl font-bold px-6 py-2 rounded-lg hover:bg-[#D80A0A] transition-colors duration-300" />
