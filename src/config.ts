@@ -1,6 +1,7 @@
 const siteConfig = {
   name: "Bottles",
   description: "Bottles",
+  SUI_NETWORK: "testnet",
   WALRUS_PUBLISHER_URL: "https://publisher-devnet.walrus.space",
   WALRUS_AGGREGATOR_URL: "https://aggregator-devnet.walrus.space",
   navItems: [

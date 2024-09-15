@@ -24,13 +24,7 @@ export default function BottlesPage() {
   const [selectedBottle, setSelectedBottle] = useState<Bottle | null>(null);
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
-  const handleReply = (message: string, image: File | null) => {
-    console.log("Reply message:", message);
-    console.log("Reply image:", image);
-    // Add reply logic here
-  };
-
-  const { bottles, sentBottles, repliedBottles } = useBottles();
+  const { bottles, sentBottles, repliedBottles, refresh } = useBottles();
 
   useEffect(() => {
     // 根据activeTab过滤瓶子
@@ -46,6 +40,12 @@ export default function BottlesPage() {
       );
     }
   }, [activeTab, bottles, currentAccount]);
+
+  useEffect(() => {
+    if (!isOpen) {
+      refresh();
+    }
+  }, [isOpen]);
 
   const handleOpenBottle = (bottle: Bottle) => {
     setSelectedBottle(bottle);
@@ -102,73 +102,74 @@ export default function BottlesPage() {
                 <ConnectButton />
               </div>
             )}
-          {(activeTab === "unread" || currentAccount?.address) && (
-            <div className="show-all-bottles flex flex-wrap gap-4">
-              {filteredBottles.length === 0
-                ? // Show skeleton screen
-                  Array(8)
-                    .fill(0)
-                    .map((_, index) => (
-                      <div
-                        key={index}
-                        className="w-64 h-80 bg-white rounded-lg p-4"
-                      >
-                        <Skeleton className="rounded-lg">
-                          <div className="h-32 rounded-lg bg-default-300" />
-                        </Skeleton>
-                        <div className="space-y-3 mt-4">
-                          <Skeleton className="w-3/5 rounded-lg">
-                            <div className="h-3 w-3/5 rounded-lg bg-default-200" />
+          {(activeTab === "unread" || currentAccount?.address) &&
+            activeTab !== "drop" && (
+              <div className="show-all-bottles flex flex-wrap gap-4">
+                {filteredBottles.length === 0
+                  ? // Show skeleton screen
+                    Array(8)
+                      .fill(0)
+                      .map((_, index) => (
+                        <div
+                          key={index}
+                          className="w-64 h-80 bg-white rounded-lg p-4"
+                        >
+                          <Skeleton className="rounded-lg">
+                            <div className="h-32 rounded-lg bg-default-300" />
                           </Skeleton>
-                          <Skeleton className="w-4/5 rounded-lg">
-                            <div className="h-3 w-4/5 rounded-lg bg-default-200" />
-                          </Skeleton>
-                          <Skeleton className="w-2/5 rounded-lg">
-                            <div className="h-3 w-2/5 rounded-lg bg-default-300" />
-                          </Skeleton>
+                          <div className="space-y-3 mt-4">
+                            <Skeleton className="w-3/5 rounded-lg">
+                              <div className="h-3 w-3/5 rounded-lg bg-default-200" />
+                            </Skeleton>
+                            <Skeleton className="w-4/5 rounded-lg">
+                              <div className="h-3 w-4/5 rounded-lg bg-default-200" />
+                            </Skeleton>
+                            <Skeleton className="w-2/5 rounded-lg">
+                              <div className="h-3 w-2/5 rounded-lg bg-default-300" />
+                            </Skeleton>
+                          </div>
                         </div>
-                      </div>
-                    ))
-                : // Show actual bottle data
-                  filteredBottles.map((bottle) => (
-                    <div
-                      key={bottle.id}
-                      className="p-4 border rounded-lg shadow-lg w-64 h-80 overflow-hidden bg-white text-black flex flex-col 
+                      ))
+                  : // Show actual bottle data
+                    filteredBottles.map((bottle) => (
+                      <div
+                        key={bottle.id}
+                        className="p-4 border rounded-lg shadow-lg w-64 h-80 overflow-hidden bg-white text-black flex flex-col 
                       justify-between "
-                    >
-                      <div className="flex-grow flex items-center justify-center">
-                        <img
-                          alt="Bottle"
-                          className="h-36 w-auto object-contain"
-                          src={getBottleImage(bottle)}
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        {bottle.displayMsg.length > 0 && (
-                          <p className="text-sm text-center font-medium truncate">
-                            {bottle.displayMsg}
+                      >
+                        <div className="flex-grow flex items-center justify-center">
+                          <img
+                            alt="Bottle"
+                            className="h-36 w-auto object-contain"
+                            src={getBottleImage(bottle)}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          {bottle.displayMsg.length > 0 && (
+                            <p className="text-sm text-center font-medium truncate">
+                              {bottle.displayMsg}
+                            </p>
+                          )}
+                          <p className="text-xs text-center text-gray-600">
+                            From: {getFromId(bottle)}
                           </p>
-                        )}
-                        <p className="text-xs text-center text-gray-600">
-                          From: {getFromId(bottle)}
-                        </p>
-                      </div>
-                      <Button
-                        className="bg-[#fb0c0c] text-white hover:bg-[#d80a0a] w-auto mx-auto mt-3 rounded-full 
+                        </div>
+                        <Button
+                          className="bg-[#fb0c0c] text-white hover:bg-[#d80a0a] w-auto mx-auto mt-3 rounded-full 
                         transition-all duration-300 hover:shadow-xl hover:scale-105
                         "
-                        size="sm"
-                        onClick={() => handleOpenBottle(bottle)}
-                      >
-                        Open Bottle
-                      </Button>
-                    </div>
-                  ))}
-            </div>
-          )}
+                          size="sm"
+                          onClick={() => handleOpenBottle(bottle)}
+                        >
+                          Open Bottle
+                        </Button>
+                      </div>
+                    ))}
+              </div>
+            )}
           {activeTab === "drop" && (
             <div className="flex justify-center items-center h-full">
-              <MintForm />
+              <MintForm onSubmit={refresh} />
             </div>
           )}
         </div>
@@ -179,7 +180,6 @@ export default function BottlesPage() {
           isOpen={isOpen}
           selectedBottle={selectedBottle}
           onOpenChange={onOpenChange}
-          onReply={handleReply}
         />
       )}
     </DefaultLayout>

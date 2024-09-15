@@ -1,7 +1,12 @@
 import { cacheWithSessionStorageDecorator } from "./index";
-
+import { getFullnodeUrl, SuiClient } from "@mysten/sui/client";
 import siteConfig from "@/config";
 
+const suiNetwork = siteConfig.SUI_NETWORK as
+  | "testnet"
+  | "mainnet"
+  | "devnet"
+  | "localnet";
 const WALRUS_PUBLISHER_URL = siteConfig.WALRUS_PUBLISHER_URL;
 const WALRUS_AGGREGATOR_URL = siteConfig.WALRUS_AGGREGATOR_URL;
 const numEpochs = 1;
@@ -100,7 +105,7 @@ export async function storeBlob(inputFiles: (File | string)[]) {
           returnData.push({
             blobId: info.alreadyCertified.blobId,
             objectId: await getObjectFromTx(
-              info.alreadyCertified.event.txDigest,
+              info.alreadyCertified.event.txDigest
             ),
           });
         } else {
@@ -117,19 +122,29 @@ export async function storeBlob(inputFiles: (File | string)[]) {
 }
 
 async function getObjectFromTx(txId: string) {
-  return txId;
+  const suiClient = new SuiClient({
+    url: getFullnodeUrl(suiNetwork),
+  });
 
-  // const rst = await client.getTransactionBlock({
-  //   digest: "DY1bNRbXwxVVReuVDQBvTwuT9EYnV6En7iqJZveJq9As",
-  //   options: {
-  //     showInput: true,
-  //   },
-  // });
+  const rst = await suiClient.getTransactionBlock({
+    digest: txId,
+    options: {
+      showInput: true,
+    },
+  });
 
-  // const inputs = rst.transaction.data.transaction.inputs;
-  // const { objectId } = inputs.find(
-  //   ({ type, objectType }) =>
-  //     type === "object" && objectType === "immOrOwnedObject"
-  // );
-  // console.log(objectId);
+  if (!rst.transaction) {
+    throw new Error("Transaction data not found");
+  }
+  // @ts-expect-error We know this is the correct type for the Sui SDK
+  const inputs = rst.transaction.data.transaction.inputs;
+  const { objectId } = inputs.find(
+    // @ts-expect-error We know this is the correct type for the Sui SDK
+    ({ type, objectType }) =>
+      type === "object" && objectType === "immOrOwnedObject"
+  );
+
+  return objectId;
 }
+
+getObjectFromTx("8qkLrSW2M16zZdmPtppJNwHLPGNW2w6RuhoFsMbLQqvC");

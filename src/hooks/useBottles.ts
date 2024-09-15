@@ -37,50 +37,52 @@ export function useBottles() {
   const [sentBottles, setSentBottles] = useState(0);
   const [repliedBottles, setRepliedBottles] = useState(0);
 
-  useEffect(() => {
-    const fetchBottles = async () => {
-      const result = (await suiClient.queryEvents({
-        query: {
-          MoveEventType: EventType,
-        },
-        limit: 1000,
-      })) as {
-        data: BottleIdObj[];
-      };
-
-      const ids = new Set(result.data.map((obj) => obj.parsedJson.bottle_id));
-
-      const objs = await suiClient.multiGetObjects({
-        ids: Array.from(ids),
-        options: {
-          showPreviousTransaction: true,
-          showContent: true,
-        },
-      });
-
-      const fetchedBottles = await Promise.all(
-        objs.map((obj) => toBottle(obj))
-      );
-
-      setBottles(fetchedBottles);
-
-      const sentCount = result.data.filter(
-        (obj) =>
-          obj.parsedJson.action_type === "create" &&
-          obj.parsedJson.from === currentAccount?.address
-      ).length;
-      const repliedCount = result.data.filter(
-        (obj) =>
-          obj.parsedJson.action_type === "reply" &&
-          obj.parsedJson.to === currentAccount?.address
-      ).length;
-
-      setSentBottles(sentCount);
-      setRepliedBottles(repliedCount);
+  const fetchBottles = async () => {
+    const result = (await suiClient.queryEvents({
+      query: {
+        MoveEventType: EventType,
+      },
+      limit: 1000,
+    })) as {
+      data: BottleIdObj[];
     };
 
+    const ids = new Set(result.data.map((obj) => obj.parsedJson.bottle_id));
+
+    const objs = await suiClient.multiGetObjects({
+      ids: Array.from(ids),
+      options: {
+        showPreviousTransaction: true,
+        showContent: true,
+      },
+    });
+
+    const fetchedBottles = await Promise.all(objs.map((obj) => toBottle(obj)));
+
+    setBottles(fetchedBottles);
+
+    const sentCount = result.data.filter(
+      (obj) =>
+        obj.parsedJson.action_type === "create" &&
+        obj.parsedJson.from === currentAccount?.address
+    ).length;
+    const repliedCount = result.data.filter(
+      (obj) =>
+        obj.parsedJson.action_type === "reply" &&
+        obj.parsedJson.to === currentAccount?.address
+    ).length;
+
+    setSentBottles(sentCount);
+    setRepliedBottles(repliedCount);
+  };
+
+  useEffect(() => {
     fetchBottles();
   }, [currentAccount, suiClient]);
 
-  return { bottles, sentBottles, repliedBottles };
+  const refresh = () => {
+    fetchBottles();
+  };
+
+  return { bottles, sentBottles, repliedBottles, refresh };
 }

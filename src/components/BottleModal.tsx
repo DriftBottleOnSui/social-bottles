@@ -14,7 +14,6 @@ interface BottleModalProps {
   isOpen: boolean;
   onOpenChange: () => void;
   selectedBottle: Bottle | null;
-  onReply: (message: string, image: File | null) => void;
 }
 
 function getFromId(bottle: Bottle) {
