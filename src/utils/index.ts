@@ -21,7 +21,7 @@ export async function checkTextWithAI(text: string): Promise<{
 
   return {
     isAcceptable: result.assessment === "适当",
-    suggestions: result.suggestions,
+    suggestions: "Please use appropriate language.",
   };
 }
 

@@ -7,6 +7,7 @@ import {
 import Button from "@/components/Button";
 import Input from "@/components/Input";
 import { useSubmission } from "@/hooks/use-submission";
+import TipCarousel from "@/components/tip-carousel";
 
 export default function MintForm({ onSubmit }: { onSubmit?: () => void }) {
   const { isConnected } = useCurrentWallet();
@@ -74,24 +75,29 @@ export default function MintForm({ onSubmit }: { onSubmit?: () => void }) {
           </div>
         </div>
 
-        {!isConnected ? (
-          <ConnectModal
-            open={open}
-            trigger={
-              <Button isDisabled={!!currentAccount}>
-                {currentAccount ? "Connected" : "Connect"}
-              </Button>
-            }
-            onOpenChange={(isOpen) => setOpen(isOpen)}
-          />
-        ) : (
-          <Button
-            isLoading={isPending || isChecking}
-            onClick={handleFormSubmit}
-          >
-            {isPending ? "Minting..." : "Mint"}
-          </Button>
-        )}
+        <div className="show-button mt-4">
+          {!isConnected ? (
+            <ConnectModal
+              open={open}
+              trigger={
+                <Button isDisabled={!!currentAccount}>
+                  {currentAccount ? "Connected" : "Connect"}
+                </Button>
+              }
+              onOpenChange={(isOpen) => setOpen(isOpen)}
+            />
+          ) : (
+            <Button
+              isLoading={isPending || isChecking}
+              onClick={handleFormSubmit}
+            >
+              {isPending ? "Minting..." : "Mint"}
+            </Button>
+          )}
+        </div>
+        <div className="mt-4 ">
+          <TipCarousel />
+        </div>
       </div>
     </div>
   );

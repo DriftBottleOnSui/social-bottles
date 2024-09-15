@@ -6,6 +6,7 @@ import {
   ModalBody,
   ModalFooter,
   Button,
+  Image,
 } from "@nextui-org/react";
 import { Bottle } from "@/types";
 import { useSubmission } from "@/hooks/use-submission";
@@ -85,7 +86,7 @@ export default function BottleModal({
                           {msg.content}
                         </p>
                       ) : (
-                        <img
+                        <Image
                           alt="Message content"
                           className="w-full h-auto"
                           src={msg.content}
