@@ -81,7 +81,9 @@ export function useBottles() {
   }, [currentAccount, suiClient]);
 
   const refresh = () => {
-    fetchBottles();
+    setTimeout(() => {
+      fetchBottles();
+    }, 1000);
   };
 
   return { bottles, sentBottles, repliedBottles, refresh };
