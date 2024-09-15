@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Skeleton, Button, useDisclosure } from "@nextui-org/react";
-import { useCurrentAccount } from "@mysten/dapp-kit";
+import { ConnectButton, useCurrentAccount } from "@mysten/dapp-kit";
 
 import DefaultLayout from "@/layouts/default";
 import { getBottleImage } from "@/utils/storage";
@@ -36,11 +36,11 @@ export default function BottlesPage() {
     // 根据activeTab过滤瓶子
     if (activeTab === "unread") {
       setFilteredBottles(bottles.filter((bottle) => !bottle.to));
-    } else if (activeTab === "sent") {
+    } else if (activeTab === "bottles") {
       setFilteredBottles(
         bottles.filter((bottle) => bottle.from === currentAccount?.address)
       );
-    } else if (activeTab === "replied") {
+    } else if (activeTab === "friends") {
       setFilteredBottles(
         bottles.filter((bottle) => bottle.to === currentAccount?.address)
       );
@@ -69,8 +69,8 @@ export default function BottlesPage() {
           <div className="flex flex-col space-y-3">
             {[
               { key: "unread", label: "New Bottles" },
-              { key: "sent", label: "My Bottles" },
-              { key: "replied", label: "Friends' Bottles" },
+              { key: "bottles", label: "My Bottles" },
+              { key: "friends", label: "Friends' Bottles" },
               { key: "drop", label: "Drop a Bottle" },
             ].map((item) => (
               <button
@@ -96,7 +96,13 @@ export default function BottlesPage() {
               "linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.2)), url('/images/bottles-bg.png')",
           }}
         >
-          {activeTab !== "drop" && (
+          {(activeTab === "bottles" || activeTab === "friends") &&
+            !currentAccount?.address && (
+              <div className="flex justify-center items-center h-full">
+                <ConnectButton />
+              </div>
+            )}
+          {(activeTab === "unread" || currentAccount?.address) && (
             <div className="show-all-bottles flex flex-wrap gap-4">
               {filteredBottles.length === 0
                 ? // Show skeleton screen
