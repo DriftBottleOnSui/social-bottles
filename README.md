@@ -1,5 +1,12 @@
 # Drift Bottle Social Game - Sui Blockchain Edition
 
+- Is there something you've always wanted to say but never found the courage? What are you afraid of? What’s holding you back? Send a drift bottle and release the words that have been weighing on your heart.
+- Is there someone you can't stop thinking about, someone you long to speak to but don’t dare? Write your feelings in a drift bottle, and maybe it will find its way to them.
+- Has anyone ever told you, "I love you more than anything"?
+- Feeling overwhelmed? Need a place to let it all out? Write down the burdens on your heart and send them drifting away.
+- Did you know? That year, I waited for you… until the very end. 
+
+
 ## Project Overview
 This project is a social game based on the Sui blockchain where users can make new friends by throwing and picking up drift bottles and engage in further conversations. The game combines blockchain technology with the traditional drift bottle concept, providing users with a fun and decentralized social experience. You can try it out at https://drift-bottle.walrus.site.
 
@@ -45,5 +52,13 @@ public-hoist-pattern[]=*@nextui-org/*
 After modifying the `.npmrc` file, run `pnpm install` again to ensure proper installation of dependencies.
 
 ## Smart Contract Interaction
-- Deployment Address: 0xd0bb9f2fb93d5d750a859758b8c75fcb3416bfc71dc8684912de35cd030912b7
-- Deployment Network: testnet
+you can clone the smart contract project
+
+```bash
+git clone https://github.com/DriftBottleOnSui/drift_bottle.git
+```
+
+### Deployment Address
+packageId: 0xd0bb9f2fb93d5d750a859758b8c75fcb3416bfc71dc8684912de35cd030912b7
+
+env: testnet
