@@ -96,7 +96,7 @@ export default function BottlesPage() {
 
         {/* 右侧内容区域 */}
         <div
-          className="flex-grow p-4 bg-cover bg-center bg-no-repeat "
+          className="flex-grow p-4 bg-cover bg-center bg-no-repeat overflow-y-auto"
           style={{
             backgroundImage:
               "linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.2)), url('/images/bottles-bg.png')",

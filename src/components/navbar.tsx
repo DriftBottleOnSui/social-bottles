@@ -28,7 +28,7 @@ export const Navbar = () => {
 
   return (
     <NextUINavbar
-      className="bg-black h-24 flex items-center text-[#716C6C] shadow-md"
+      className="bg-black h-24 min-h-24 flex items-center text-[#716C6C] shadow-md"
       isMenuOpen={isMenuOpen}
       maxWidth="xl"
       position="sticky"
