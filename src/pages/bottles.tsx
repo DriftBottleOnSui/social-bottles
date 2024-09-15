@@ -66,10 +66,16 @@ export default function BottlesPage() {
         data: BottleIdObj[];
       };
 
-      console.log("result", result);
+      const repliedIds = result.data
+        .filter((obj) => obj.parsedJson.action_type === "reply")
+        .map((obj) => obj.parsedJson.bottle_id);
 
       const ids = result.data
-        .filter((obj) => obj.parsedJson.action_type === "create")
+        .filter(
+          (obj) =>
+            obj.parsedJson.action_type === "create" &&
+            !repliedIds.includes(obj.parsedJson.bottle_id)
+        )
         .map((obj) => obj.parsedJson.bottle_id);
 
       // Get bottle data
@@ -206,12 +212,14 @@ export default function BottlesPage() {
         </div>
       </div>
 
-      <BottleModal
-        isOpen={isOpen}
-        selectedBottle={selectedBottle}
-        onOpenChange={onOpenChange}
-        onReply={handleReply}
-      />
+      {selectedBottle && (
+        <BottleModal
+          isOpen={isOpen}
+          selectedBottle={selectedBottle}
+          onOpenChange={onOpenChange}
+          onReply={handleReply}
+        />
+      )}
     </DefaultLayout>
   );
 }

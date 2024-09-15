@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useRef } from "react";
 import {
   Modal,
   ModalContent,
@@ -7,8 +7,8 @@ import {
   ModalFooter,
   Button,
 } from "@nextui-org/react";
-
 import { Bottle } from "@/types";
+import { useSubmission } from "@/hooks/use-submission";
 
 interface BottleModalProps {
   isOpen: boolean;
@@ -19,7 +19,6 @@ interface BottleModalProps {
 
 function getFromId(bottle: Bottle) {
   const fromId = bottle.from;
-
   return `${fromId.slice(0, 4)}...${fromId.slice(-4)}`;
 }
 
@@ -27,21 +26,26 @@ export default function BottleModal({
   isOpen,
   onOpenChange,
   selectedBottle,
-  onReply,
 }: BottleModalProps) {
-  const [replyMessage, setReplyMessage] = useState("");
-  const [replyImage, setReplyImage] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  const {
+    content: replyMessage,
+    setContent: setReplyMessage,
+    image: replyImage,
+    setImage: setReplyImage,
+    aiSuggestion,
+    isChecking,
+    isPending,
+    handleSubmit,
+  } = useSubmission(selectedBottle!.id);
+
   const handleReply = () => {
-    onReply(replyMessage, replyImage);
-    setReplyMessage("");
-    setReplyImage(null);
+    handleSubmit();
   };
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-
     if (file) {
       setReplyImage(file);
     }
@@ -100,6 +104,9 @@ export default function BottleModal({
                   value={replyMessage}
                   onChange={(e) => setReplyMessage(e.target.value)}
                 />
+                {aiSuggestion && (
+                  <p className="text-red-500 text-sm mt-1">{aiSuggestion}</p>
+                )}
                 <div className="flex items-center space-x-2">
                   <Button
                     className="bg-gray-200 text-gray-800"
@@ -134,8 +141,9 @@ export default function BottleModal({
                 className="bg-[#fb0c0c] text-white hover:bg-[#d80a0a] w-auto mx-auto mt-3 rounded-full 
                 transition-all duration-300 hover:shadow-xl hover:scale-105"
                 onPress={handleReply}
+                isLoading={isPending || isChecking}
               >
-                Send Reply
+                {isPending ? "Sending..." : "Send Reply"}
               </Button>
             </ModalFooter>
           </>
