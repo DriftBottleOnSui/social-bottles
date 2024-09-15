@@ -1,7 +1,7 @@
 import { Transaction } from "@mysten/sui/transactions";
 
 const CONTRACT_ADDRESS =
-  "0xf9e1810f194bf23b229638d87f5323ec045d20e8d2bd7d3383381f6970e17cb2";
+  "0xd0bb9f2fb93d5d750a859758b8c75fcb3416bfc71dc8684912de35cd030912b7";
 
 export const EventType = `${CONTRACT_ADDRESS}::social_bottle::BottleEvent`;
 const CreateBottleMethod = `${CONTRACT_ADDRESS}::social_bottle::createBottle`;

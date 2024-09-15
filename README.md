@@ -1,50 +1,64 @@
-# Vite & NextUI Template
+# Drift Bottle Social Game - Sui Blockchain Edition
 
-This is a template for creating applications using Vite and NextUI (v2).
+- Is there something you've always wanted to say but never found the courage? What are you afraid of? What’s holding you back? Send a drift bottle and release the words that have been weighing on your heart.
+- Is there someone you can't stop thinking about, someone you long to speak to but don’t dare? Write your feelings in a drift bottle, and maybe it will find its way to them.
+- Has anyone ever told you, "I love you more than anything"?
+- Feeling overwhelmed? Need a place to let it all out? Write down the burdens on your heart and send them drifting away.
+- Did you know? That year, I waited for you… until the very end. 
 
-[Try it on CodeSandbox](https://githubbox.com/nextui-org/vite-template)
 
-## Technologies Used
+## Project Overview
+This project is a social game based on the Sui blockchain where users can make new friends by throwing and picking up drift bottles and engage in further conversations. The game combines blockchain technology with the traditional drift bottle concept, providing users with a fun and decentralized social experience. You can try it out at https://drift-bottle.walrus.site.
 
-- [Vite](https://vitejs.dev/guide/)
-- [NextUI](https://nextui.org)
-- [Tailwind CSS](https://tailwindcss.com)
-- [Tailwind Variants](https://tailwind-variants.org)
-- [TypeScript](https://www.typescriptlang.org)
-- [Framer Motion](https://www.framer.com/motion)
+## Features
+- **Throw Drift Bottles**: Users can throw message bottles into the sea, supporting both text and images. All messages are stored on Walrus.
+- **Pick Drift Bottles**: Users can pick up drift bottles left by others and read the messages inside.
+- **Friends System**: Users can make friends by picking up bottles and later engage in further conversations (currently in development).
+- **AI Content Compliance Check**: The game integrates AI functionality to check the compliance of content in drift bottles, preventing messages that contain sensitive topics such as politics, adult content, or violence. This ensures a healthy ecosystem within the game.
+- **Walrus Integration**: All static resources of the game are stored on Walrus, ensuring efficient resource management and distribution. For more details, refer to the [Walrus Sites Documentation](https://docs.walrus.site/walrus-sites/intro.html).
 
-## How to Use
+## Tech Stack
+- **Blockchain**: Sui
+- **Frontend**: Vite, NextUI, Tailwind CSS, TypeScript
+- **Storage**: Walrus
+- **AI Content Compliance Check**
 
-To clone the project, run the following command:
+## Installation & Setup
 
+### Clone the Project
 ```bash
-git clone https://github.com/nextui-org/vite-template.git
+git clone https://github.com/your-repo/drift-bottle.git
 ```
 
-### Install dependencies
-
-You can use one of them `npm`, `yarn`, `pnpm`, `bun`, Example using `npm`:
+### Install Dependencies
+You can use `npm`, `yarn`, `pnpm`, or `bun` to install dependencies. Here is an example using `npm`:
 
 ```bash
 npm install
 ```
 
-### Run the development server
-
+### Run the Development Server
 ```bash
 npm run dev
 ```
 
-### Setup pnpm (optional)
-
-If you are using `pnpm`, you need to add the following code to your `.npmrc` file:
+### Configure pnpm (optional)
+If you're using `pnpm`, you need to add the following code to your `.npmrc` file:
 
 ```bash
 public-hoist-pattern[]=*@nextui-org/*
 ```
 
-After modifying the `.npmrc` file, you need to run `pnpm install` again to ensure that the dependencies are installed correctly.
+After modifying the `.npmrc` file, run `pnpm install` again to ensure proper installation of dependencies.
 
-## License
+## Smart Contract Interaction
+you can clone the smart contract project
 
-Licensed under the [MIT license](https://github.com/nextui-org/vite-template/blob/main/LICENSE).
+```bash
+git clone https://github.com/DriftBottleOnSui/drift_bottle.git
+```
+
+### Deployment Address
+packageId: 0xd0bb9f2fb93d5d750a859758b8c75fcb3416bfc71dc8684912de35cd030912b7
+
+env: testnet
