@@ -1,50 +1,49 @@
-# Vite & NextUI Template
+# Drift Bottle Social Game - Sui Blockchain Edition
 
-This is a template for creating applications using Vite and NextUI (v2).
+## Project Overview
+This project is a social game based on the Sui blockchain where users can make new friends by throwing and picking up drift bottles and engage in further conversations. The game combines blockchain technology with the traditional drift bottle concept, providing users with a fun and decentralized social experience. You can try it out at https://drift-bottle.walrus.site.
 
-[Try it on CodeSandbox](https://githubbox.com/nextui-org/vite-template)
+## Features
+- **Throw Drift Bottles**: Users can throw message bottles into the sea, supporting both text and images. All messages are stored on Walrus.
+- **Pick Drift Bottles**: Users can pick up drift bottles left by others and read the messages inside.
+- **Friends System**: Users can make friends by picking up bottles and later engage in further conversations (currently in development).
+- **AI Content Compliance Check**: The game integrates AI functionality to check the compliance of content in drift bottles, preventing messages that contain sensitive topics such as politics, adult content, or violence. This ensures a healthy ecosystem within the game.
+- **Walrus Integration**: All static resources of the game are stored on Walrus, ensuring efficient resource management and distribution. For more details, refer to the [Walrus Sites Documentation](https://docs.walrus.site/walrus-sites/intro.html).
 
-## Technologies Used
+## Tech Stack
+- **Blockchain**: Sui
+- **Frontend**: Vite, NextUI, Tailwind CSS, TypeScript
+- **Storage**: Walrus
+- **AI Content Compliance Check**
 
-- [Vite](https://vitejs.dev/guide/)
-- [NextUI](https://nextui.org)
-- [Tailwind CSS](https://tailwindcss.com)
-- [Tailwind Variants](https://tailwind-variants.org)
-- [TypeScript](https://www.typescriptlang.org)
-- [Framer Motion](https://www.framer.com/motion)
+## Installation & Setup
 
-## How to Use
-
-To clone the project, run the following command:
-
+### Clone the Project
 ```bash
-git clone https://github.com/nextui-org/vite-template.git
+git clone https://github.com/your-repo/drift-bottle.git
 ```
 
-### Install dependencies
-
-You can use one of them `npm`, `yarn`, `pnpm`, `bun`, Example using `npm`:
+### Install Dependencies
+You can use `npm`, `yarn`, `pnpm`, or `bun` to install dependencies. Here is an example using `npm`:
 
 ```bash
 npm install
 ```
 
-### Run the development server
-
+### Run the Development Server
 ```bash
 npm run dev
 ```
 
-### Setup pnpm (optional)
-
-If you are using `pnpm`, you need to add the following code to your `.npmrc` file:
+### Configure pnpm (optional)
+If you're using `pnpm`, you need to add the following code to your `.npmrc` file:
 
 ```bash
 public-hoist-pattern[]=*@nextui-org/*
 ```
 
-After modifying the `.npmrc` file, you need to run `pnpm install` again to ensure that the dependencies are installed correctly.
+After modifying the `.npmrc` file, run `pnpm install` again to ensure proper installation of dependencies.
 
-## License
-
-Licensed under the [MIT license](https://github.com/nextui-org/vite-template/blob/main/LICENSE).
+## Smart Contract Interaction
+- Deployment Address: 0xd0bb9f2fb93d5d750a859758b8c75fcb3416bfc71dc8684912de35cd030912b7
+- Deployment Network: testnet
