@@ -13,7 +13,7 @@ function App() {
       <Suspense
         fallback={
           <div className="flex justify-center items-center h-screen bg-black">
-            <Spinner size="lg" color="danger" />
+            <Spinner color="danger" size="lg" />
           </div>
         }
       >

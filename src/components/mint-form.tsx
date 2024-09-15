@@ -4,6 +4,7 @@ import {
   useCurrentWallet,
   useCurrentAccount,
 } from "@mysten/dapp-kit";
+
 import Button from "@/components/Button";
 import Input from "@/components/Input";
 import { useSubmission } from "@/hooks/use-submission";
@@ -67,6 +68,7 @@ export default function MintForm({ onSubmit }: { onSubmit?: () => void }) {
               type="file"
               onChange={(e) => {
                 const file = e.target.files?.[0];
+
                 if (file) {
                   setMintImage(file);
                 }

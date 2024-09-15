@@ -8,6 +8,7 @@ import {
   Button,
   Image,
 } from "@nextui-org/react";
+
 import { Bottle } from "@/types";
 import { useSubmission } from "@/hooks/use-submission";
 
@@ -19,6 +20,7 @@ interface BottleModalProps {
 
 function getFromId(bottle: Bottle) {
   const fromId = bottle.from;
+
   return `${fromId.slice(0, 4)}...${fromId.slice(-4)}`;
 }
 
@@ -46,6 +48,7 @@ export default function BottleModal({
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
+
     if (file) {
       setReplyImage(file);
     }
@@ -140,8 +143,8 @@ export default function BottleModal({
               <Button
                 className="bg-[#fb0c0c] text-white hover:bg-[#d80a0a] w-auto mx-auto mt-3 rounded-full 
                 transition-all duration-300 hover:shadow-xl hover:scale-105"
-                onPress={handleReply}
                 isLoading={isPending || isChecking}
+                onPress={handleReply}
               >
                 {isPending ? "Sending..." : "Send Reply"}
               </Button>

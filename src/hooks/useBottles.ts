@@ -1,13 +1,14 @@
 import { useState, useEffect } from "react";
 import { useSuiClient, useCurrentAccount } from "@mysten/dapp-kit";
 import dayjs from "dayjs";
+
 import { EventType } from "@/utils/transaction";
 import { BottleIdObj, Bottle } from "@/types";
 import { getBlobWithCache } from "@/utils/storage";
 
 async function toBottle(obj: any): Promise<Bottle> {
   const msgIds = obj.data.content.fields.msgs.map(
-    (msg: any) => msg.fields.blob_id
+    (msg: any) => msg.fields.blob_id,
   );
   const promises = msgIds.map((id: string) => getBlobWithCache(id));
   const blobs = await Promise.all(promises);
@@ -36,8 +37,10 @@ export function useBottles() {
   const [bottles, setBottles] = useState<Bottle[]>([]);
   const [sentBottles, setSentBottles] = useState(0);
   const [repliedBottles, setRepliedBottles] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
 
   const fetchBottles = async () => {
+    setIsLoading(true);
     const result = (await suiClient.queryEvents({
       query: {
         MoveEventType: EventType,
@@ -64,16 +67,17 @@ export function useBottles() {
     const sentCount = result.data.filter(
       (obj) =>
         obj.parsedJson.action_type === "create" &&
-        obj.parsedJson.from === currentAccount?.address
+        obj.parsedJson.from === currentAccount?.address,
     ).length;
     const repliedCount = result.data.filter(
       (obj) =>
         obj.parsedJson.action_type === "reply" &&
-        obj.parsedJson.to === currentAccount?.address
+        obj.parsedJson.to === currentAccount?.address,
     ).length;
 
     setSentBottles(sentCount);
     setRepliedBottles(repliedCount);
+    setIsLoading(false);
   };
 
   useEffect(() => {
@@ -86,5 +90,5 @@ export function useBottles() {
     }, 1000);
   };
 
-  return { bottles, sentBottles, repliedBottles, refresh };
+  return { bottles, sentBottles, repliedBottles, refresh, isLoading };
 }

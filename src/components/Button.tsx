@@ -21,7 +21,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         {props.children}
       </NextUIButton>
     );
-  }
+  },
 );
 
 Button.displayName = "Button";

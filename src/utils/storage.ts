@@ -1,5 +1,7 @@
-import { cacheWithSessionStorageDecorator } from "./index";
 import { getFullnodeUrl, SuiClient } from "@mysten/sui/client";
+
+import { cacheWithSessionStorageDecorator } from "./index";
+
 import siteConfig from "@/config";
 
 const suiNetwork = siteConfig.SUI_NETWORK as
@@ -105,7 +107,7 @@ export async function storeBlob(inputFiles: (File | string)[]) {
           returnData.push({
             blobId: info.alreadyCertified.blobId,
             objectId: await getObjectFromTx(
-              info.alreadyCertified.event.txDigest
+              info.alreadyCertified.event.txDigest,
             ),
           });
         } else {
@@ -141,7 +143,7 @@ async function getObjectFromTx(txId: string) {
   const { objectId } = inputs.find(
     // @ts-expect-error We know this is the correct type for the Sui SDK
     ({ type, objectType }) =>
-      type === "object" && objectType === "immOrOwnedObject"
+      type === "object" && objectType === "immOrOwnedObject",
   );
 
   return objectId;

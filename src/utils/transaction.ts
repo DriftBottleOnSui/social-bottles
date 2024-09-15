@@ -12,13 +12,14 @@ export function createTransaction(
     blobId: string;
     objectId: string;
   }[],
-  bottleId?: string
+  bottleId?: string,
 ) {
   const tx = new Transaction();
   const blobIds = toCreate.map((item) => item.blobId);
   const objIds = toCreate.map((item) => item.objectId);
   const method = bottleId ? ReplyBottleMethod : CreateBottleMethod;
   const args = bottleId ? [tx.object(bottleId)] : [];
+
   // @ts-expect-error We know this is the correct type for the Sui SDK
   args.push(tx.pure("vector<string>", blobIds));
   // @ts-expect-error We know this is the correct type for the Sui SDK

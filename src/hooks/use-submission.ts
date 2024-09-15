@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { useSignAndExecuteTransaction } from "@mysten/dapp-kit";
 import toast from "react-hot-toast";
+
 import { checkTextWithAI } from "@/utils";
 import { storeBlob } from "@/utils/storage";
 import { createTransaction } from "@/utils/transaction";
@@ -35,7 +36,7 @@ export function useSubmission(objectId?: string) {
             setContent("");
             setImage(null);
           },
-        }
+        },
       );
     },
     onError: (error) => {
@@ -57,8 +58,9 @@ export function useSubmission(objectId?: string) {
         if (!checkResult.isAcceptable) {
           setAiSuggestion(checkResult.suggestions);
           toast.error(
-            "Text content is inappropriate. Please review the suggestions and modify."
+            "Text content is inappropriate. Please review the suggestions and modify.",
           );
+
           return;
         }
       } catch (error) {
@@ -72,10 +74,12 @@ export function useSubmission(objectId?: string) {
     if (image) {
       if (image.type !== "image/jpeg" && image.type !== "image/png") {
         toast.error("Please upload a JPG or PNG image");
+
         return;
       }
       if (image.size > 5 * 1024 * 1024) {
         toast.error("File size cannot exceed 5MB");
+
         return;
       }
       toStore.push(image);
@@ -83,6 +87,7 @@ export function useSubmission(objectId?: string) {
 
     if (toStore.length === 0) {
       toast.error("Please enter text or upload an image");
+
       return;
     }
 

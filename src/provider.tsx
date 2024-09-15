@@ -2,9 +2,11 @@ import { NextUIProvider } from "@nextui-org/system";
 import { useNavigate } from "react-router-dom";
 import { SuiClientProvider, WalletProvider } from "@mysten/dapp-kit";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import siteConfig from "@/config";
 
 import { networkConfig } from "./networkConfig";
+
+import siteConfig from "@/config";
+
 const queryClient = new QueryClient();
 
 const suiNetwork = siteConfig.SUI_NETWORK as
@@ -12,6 +14,7 @@ const suiNetwork = siteConfig.SUI_NETWORK as
   | "mainnet"
   | "devnet"
   | undefined;
+
 export function Provider({ children }: { children: React.ReactNode }) {
   const navigate = useNavigate();
 
