@@ -26,6 +26,7 @@ export type BottleIdObj = {
 export type Bottle = {
   id: string;
   from: string;
+  to?: string;
   displayMsg: string;
   createAt: string;
   msgs: {

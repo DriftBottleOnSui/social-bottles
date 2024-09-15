@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import dayjs from "dayjs";
 import { useSuiClient } from "@mysten/dapp-kit";
 import { Skeleton, Button, useDisclosure } from "@nextui-org/react";
+import { useCurrentAccount } from "@mysten/dapp-kit";
 
 import DefaultLayout from "@/layouts/default";
 import { getBottleImage, getBlobWithCache } from "@/utils/storage";
@@ -32,6 +33,7 @@ async function toBottle(obj: any): Promise<Bottle> {
   return {
     id: obj.data.objectId,
     from: obj.data.content.fields.from,
+    to: obj.data.content.fields.to,
     displayMsg: displayMsg,
     createAt: createAt,
     msgs: blobs.map((blob: any) => ({
@@ -43,10 +45,16 @@ async function toBottle(obj: any): Promise<Bottle> {
 
 export default function BottlesPage() {
   const suiClient = useSuiClient();
-  const [activeTab, setActiveTab] = useState("all");
+  const currentAccount = useCurrentAccount();
+
+  const [activeTab, setActiveTab] = useState("unread");
+  const [filteredBottles, setFilteredBottles] = useState<Bottle[]>([]);
+
   const [bottles, setBottles] = useState<Bottle[]>([]);
   const [selectedBottle, setSelectedBottle] = useState<Bottle | null>(null);
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const [sentBottles, setSentBottles] = useState(0);
+  const [repliedBottles, setRepliedBottles] = useState(0);
 
   const handleReply = (message: string, image: File | null) => {
     console.log("Reply message:", message);
@@ -66,21 +74,11 @@ export default function BottlesPage() {
         data: BottleIdObj[];
       };
 
-      const repliedIds = result.data
-        .filter((obj) => obj.parsedJson.action_type === "reply")
-        .map((obj) => obj.parsedJson.bottle_id);
-
-      const ids = result.data
-        .filter(
-          (obj) =>
-            obj.parsedJson.action_type === "create" &&
-            !repliedIds.includes(obj.parsedJson.bottle_id)
-        )
-        .map((obj) => obj.parsedJson.bottle_id);
+      const ids = new Set(result.data.map((obj) => obj.parsedJson.bottle_id));
 
       // Get bottle data
       const objs = await suiClient.multiGetObjects({
-        ids: ids,
+        ids: Array.from(ids),
         options: {
           showPreviousTransaction: true,
           showContent: true,
@@ -93,10 +91,40 @@ export default function BottlesPage() {
       console.log("bottles", bottles);
 
       setBottles(bottles);
+
+      // Calculate sent and replied bottles
+      const sentCount = result.data.filter(
+        (obj) =>
+          obj.parsedJson.action_type === "create" &&
+          obj.parsedJson.from === currentAccount?.address
+      ).length;
+      const repliedCount = result.data.filter(
+        (obj) =>
+          obj.parsedJson.action_type === "reply" &&
+          obj.parsedJson.to === currentAccount?.address
+      ).length;
+
+      setSentBottles(sentCount);
+      setRepliedBottles(repliedCount);
     };
 
     fetchBottles();
-  }, []);
+  }, [currentAccount]);
+
+  useEffect(() => {
+    // 根据activeTab过滤瓶子
+    if (activeTab === "unread") {
+      setFilteredBottles(bottles.filter((bottle) => !bottle.to));
+    } else if (activeTab === "sent") {
+      setFilteredBottles(
+        bottles.filter((bottle) => bottle.from === currentAccount?.address)
+      );
+    } else if (activeTab === "replied") {
+      setFilteredBottles(
+        bottles.filter((bottle) => bottle.to === currentAccount?.address)
+      );
+    }
+  }, [activeTab, bottles, currentAccount]);
 
   const handleOpenBottle = (bottle: Bottle) => {
     setSelectedBottle(bottle);
@@ -106,33 +134,40 @@ export default function BottlesPage() {
   return (
     <DefaultLayout>
       <div className="flex h-full w-full">
-        {/* Left sidebar */}
-        <div className="basis-80 p-4 bg-black text-white">
-          <div className="flex flex-col space-y-4">
-            <button
-              className={`w-full p-2 border ${
-                activeTab === "all"
-                  ? "bg-white text-black border-black"
-                  : "bg-black text-white border-white"
-              }`}
-              onClick={() => setActiveTab("all")}
-            >
-              Show All Bottles
-            </button>
-            <button
-              className={`w-full p-2 border ${
-                activeTab === "drop"
-                  ? "bg-white text-black border-black"
-                  : "bg-black text-white border-white"
-              }`}
-              onClick={() => setActiveTab("drop")}
-            >
-              Drop a Bottle
-            </button>
+        {/* 左侧导航栏 */}
+        <div className="w-80 min-w-80 p-6 bg-gray-900 text-white">
+          <img
+            src={`https://api.dicebear.com/6.x/avataaars/svg?seed=${currentAccount?.address || "default"}`}
+            alt="Wallet Avatar"
+            className="w-32 h-32 mx-auto rounded-full border-4 border-white mb-6"
+          />
+          <div className="mb-6 text-center">
+            <p className="text-sm">Bottles: {sentBottles}</p>
+            <p className="text-sm">Friends: {repliedBottles}</p>
+          </div>
+          <div className="flex flex-col space-y-3">
+            {[
+              { key: "unread", label: "New Bottles" },
+              { key: "sent", label: "My Bottles" },
+              { key: "replied", label: "Friends' Bottles" },
+              { key: "drop", label: "Drop a Bottle" },
+            ].map((item) => (
+              <button
+                key={item.key}
+                className={`w-full py-2 px-4 rounded-lg transition-colors duration-200 ${
+                  activeTab === item.key
+                    ? "bg-white text-gray-900 font-semibold"
+                    : "bg-gray-800 text-white hover:bg-gray-700"
+                }`}
+                onClick={() => setActiveTab(item.key)}
+              >
+                {item.label}
+              </button>
+            ))}
           </div>
         </div>
 
-        {/* Right content area */}
+        {/* 右侧内容区域 */}
         <div
           className="flex-grow p-4 bg-cover bg-center bg-no-repeat "
           style={{
@@ -140,9 +175,9 @@ export default function BottlesPage() {
               "linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.2)), url('/images/bottles-bg.png')",
           }}
         >
-          {activeTab === "all" && (
+          {activeTab !== "drop" && (
             <div className="show-all-bottles flex flex-wrap gap-4">
-              {bottles.length === 0
+              {filteredBottles.length === 0
                 ? // Show skeleton screen
                   Array(8)
                     .fill(0)
@@ -168,7 +203,7 @@ export default function BottlesPage() {
                       </div>
                     ))
                 : // Show actual bottle data
-                  bottles.map((bottle) => (
+                  filteredBottles.map((bottle) => (
                     <div
                       key={bottle.id}
                       className="p-4 border rounded-lg shadow-lg w-64 h-80 overflow-hidden bg-white text-black flex flex-col 

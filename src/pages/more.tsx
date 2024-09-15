@@ -1,4 +1,3 @@
-import { title } from "@/components/primitives";
 import DefaultLayout from "@/layouts/default";
 
 export default function MorePage() {
@@ -6,7 +5,9 @@ export default function MorePage() {
     <DefaultLayout>
       <section className="flex flex-col items-center justify-center gap-4 py-8 md:py-10">
         <div className="inline-block max-w-lg text-center justify-center">
-          <h1 className={title()}>Blog</h1>
+          <h2 className="text-2xl font-bold">
+            Settings page is under construction
+          </h2>
         </div>
       </section>
     </DefaultLayout>

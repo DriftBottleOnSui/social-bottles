@@ -50,10 +50,9 @@ export const Navbar = () => {
             <NavbarItem
               key={item.href}
               className={clsx(
-                "pt-6",
                 "relative",
                 location.pathname === item.href &&
-                  "after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-[3px] after:bg-[#FB0C0C]",
+                  "after:content-[''] after:absolute after:bottom-0 after:left-0 mx-4 after:w-full after:h-[3px] after:bg-[#FB0C0C]"
               )}
               isActive={location.pathname === item.href}
             >
@@ -61,7 +60,7 @@ export const Navbar = () => {
                 className={clsx(
                   "data-[active=true]:text-white data-[active=true]:font-medium",
                   "hover:text-white",
-                  "text-4xl",
+                  "text-4xl"
                 )}
                 data-active={location.pathname === item.href}
                 to={item.href}
@@ -105,7 +104,7 @@ export const Navbar = () => {
                   "text-4xl",
                   location.pathname === item.href
                     ? "text-white font-medium"
-                    : "",
+                    : ""
                 )}
                 to={item.href}
                 onClick={closeMenu}
