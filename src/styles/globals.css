@@ -2,16 +2,24 @@
 @tailwind components;
 @tailwind utilities;
 
-@font-face {
+/* @font-face {
   font-family: "CoveredByYourGrace";
   src: url("/fonts/CoveredByYourGrace-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+} */
+
+@font-face {
+  font-family: "Cake";
+  src: url("/fonts/Cake.ttf") format("truetype");
   font-weight: 400;
   font-style: normal;
   font-display: swap;
 }
 
 html {
-  font-family: "CoveredByYourGrace", sans-serif;
+  font-family: "Cake";
 }
 
 .navbar-menu-toggle {
