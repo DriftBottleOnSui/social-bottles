@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Skeleton, Button, useDisclosure } from "@nextui-org/react";
 import { ConnectButton, useCurrentAccount } from "@mysten/dapp-kit";
+import { motion, AnimatePresence } from "framer-motion";
 
 import DefaultLayout from "@/layouts/default";
 import { getBottleImage } from "@/utils/storage";
@@ -137,24 +138,34 @@ export default function BottlesPage() {
                       ))
                   : // Show actual bottle data
                     filteredBottles.map((bottle) => (
-                      <div
+                      <motion.div
                         key={bottle.id}
+                        layout
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.8 }}
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        transition={{ duration: 0.3 }}
                         className="p-4 border rounded-lg shadow-lg w-64 h-80 overflow-hidden bg-white text-black flex flex-col 
-                      justify-between "
+                        justify-between cursor-pointer"
+                        onClick={() => handleOpenBottle(bottle)}
                       >
                         <div className="flex-grow flex items-center justify-center">
                           <img
                             alt="Bottle"
                             className="h-36 w-auto object-contain"
-                            src={getBottleImage(bottle)}
+                            src={getBottleImage(bottle, activeTab === "unread")}
                           />
                         </div>
                         <div className="space-y-2">
-                          {bottle.displayMsg.length > 0 && (
-                            <p className="text-sm text-center font-medium truncate">
-                              {bottle.displayMsg}
-                            </p>
-                          )}
+                          {activeTab !== "unread" &&
+                            bottle.displayMsg.length > 0 && (
+                              <p className="text-sm text-center font-medium truncate">
+                                {bottle.displayMsg}
+                              </p>
+                            )}
+
                           <p className="text-xs text-center text-gray-600">
                             From: {getFromId(bottle)}
                           </p>
@@ -166,9 +177,9 @@ export default function BottlesPage() {
                           size="sm"
                           onClick={() => handleOpenBottle(bottle)}
                         >
-                          Open Bottle
+                          {activeTab === "unread" ? "Open Bottle" : "View"}
                         </Button>
-                      </div>
+                      </motion.div>
                     ))}
               </div>
             )}
