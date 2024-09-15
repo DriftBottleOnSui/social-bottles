@@ -8,7 +8,7 @@ import Button from "@/components/Button";
 import Input from "@/components/Input";
 import { useSubmission } from "@/hooks/use-submission";
 
-export default function MintForm({ onSubmit }: { onSubmit: () => void }) {
+export default function MintForm({ onSubmit }: { onSubmit?: () => void }) {
   const { isConnected } = useCurrentWallet();
   const currentAccount = useCurrentAccount();
   const [open, setOpen] = useState(false);
@@ -25,7 +25,7 @@ export default function MintForm({ onSubmit }: { onSubmit: () => void }) {
 
   const handleFormSubmit = () => {
     handleMint();
-    onSubmit();
+    onSubmit?.();
   };
 
   return (
