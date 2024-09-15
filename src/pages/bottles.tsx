@@ -77,7 +77,7 @@ export default function BottlesPage() {
               { key: "unread", label: "New Bottles" },
               { key: "bottles", label: "My Bottles" },
               { key: "friends", label: "Friends' Bottles" },
-              { key: "drop", label: "Drop a Bottle" },
+              { key: "drop", label: "Send a Bottle" },
             ].map((item) => (
               <button
                 key={item.key}

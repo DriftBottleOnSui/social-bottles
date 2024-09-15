@@ -44,7 +44,7 @@ export default function MintForm({ onSubmit }: { onSubmit?: () => void }) {
           }}
         >
           <h1 className="text-white text-center text-2xl font-bold">
-            Mint Bottle
+            Send Drift Bottle
           </h1>
         </div>
         <div className="flex flex-col gap-2">
@@ -91,7 +91,7 @@ export default function MintForm({ onSubmit }: { onSubmit?: () => void }) {
               isLoading={isPending || isChecking}
               onClick={handleFormSubmit}
             >
-              {isPending ? "Minting..." : "Mint"}
+              {isPending ? "Sending..." : "Send"}
             </Button>
           )}
         </div>
