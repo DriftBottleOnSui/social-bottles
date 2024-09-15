@@ -117,6 +117,9 @@ export const Navbar = () => {
               </RouterLink>
             </NavbarMenuItem>
           ))}
+          <NavbarMenuItem>
+            <ConnectButton className="bg-[#FB0C0C] text-white text-2xl font-bold px-6 py-2 rounded-lg hover:bg-[#D80A0A] transition-colors duration-300" />
+          </NavbarMenuItem>
         </div>
       </NavbarMenu>
     </NextUINavbar>
