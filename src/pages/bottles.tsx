@@ -146,15 +146,17 @@ export default function BottlesPage() {
                           <img
                             alt="Bottle"
                             className="h-36 w-auto object-contain"
-                            src={getBottleImage(bottle)}
+                            src={getBottleImage(bottle, activeTab === "unread")}
                           />
                         </div>
                         <div className="space-y-2">
-                          {bottle.displayMsg.length > 0 && (
-                            <p className="text-sm text-center font-medium truncate">
-                              {bottle.displayMsg}
-                            </p>
-                          )}
+                          {activeTab !== "unread" &&
+                            bottle.displayMsg.length > 0 && (
+                              <p className="text-sm text-center font-medium truncate">
+                                {bottle.displayMsg}
+                              </p>
+                            )}
+
                           <p className="text-xs text-center text-gray-600">
                             From: {getFromId(bottle)}
                           </p>
@@ -166,7 +168,7 @@ export default function BottlesPage() {
                           size="sm"
                           onClick={() => handleOpenBottle(bottle)}
                         >
-                          Open Bottle
+                          {activeTab === "unread" ? "Open Bottle" : "View"}
                         </Button>
                       </div>
                     ))}

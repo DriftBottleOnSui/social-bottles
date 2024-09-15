@@ -17,10 +17,10 @@ import BottleImageType3 from "/images/bottles/3.png";
 
 import { Bottle } from "@/types";
 
-export function getBottleImage(bottle: Bottle) {
+export function getBottleImage(bottle: Bottle, isUnread = false) {
   const bottleImg = bottle.msgs.find((msg) => msg.mediaType === "image");
 
-  if (bottleImg) {
+  if (!isUnread && bottleImg) {
     return bottleImg.content;
   }
   const idNum = parseInt(bottle.id.slice(2), 16) % 3;
