@@ -1,20 +1,14 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import dayjs from "dayjs";
 import { useSuiClient } from "@mysten/dapp-kit";
-import {
-  Skeleton,
-  Button,
-  Modal,
-  ModalContent,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
-  useDisclosure,
-} from "@nextui-org/react";
+import { Skeleton, Button, useDisclosure } from "@nextui-org/react";
 
 import DefaultLayout from "@/layouts/default";
-import { EventType, getBottleImage, getBlobWithCache } from "@/utils";
+import { getBottleImage, getBlobWithCache } from "@/utils/storage";
+import { EventType } from "@/utils/transaction";
 import { BottleIdObj, Bottle } from "@/types";
+import BottleModal from "@/components/BottleModal";
+import MintForm from "@/components/mint-form";
 
 function getFromId(bottle: Bottle) {
   const fromId = bottle.from;
@@ -53,28 +47,11 @@ export default function BottlesPage() {
   const [bottles, setBottles] = useState<Bottle[]>([]);
   const [selectedBottle, setSelectedBottle] = useState<Bottle | null>(null);
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
-  const [replyMessage, setReplyMessage] = useState("");
-  const [replyImage, setReplyImage] = useState<File | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleReply = () => {
+  const handleReply = (message: string, image: File | null) => {
+    console.log("Reply message:", message);
+    console.log("Reply image:", image);
     // Add reply logic here
-    console.log("Reply message:", replyMessage);
-    console.log("Reply image:", replyImage);
-    // Clear input after sending reply
-    setReplyMessage("");
-    setReplyImage(null);
-  };
-
-  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      setReplyImage(file);
-    }
-  };
-
-  const triggerFileInput = () => {
-    fileInputRef.current?.click();
   };
 
   useEffect(() => {
@@ -151,10 +128,10 @@ export default function BottlesPage() {
 
         {/* Right content area */}
         <div
-          className="flex-grow p-4 bg-cover bg-center bg-no-repeat text-white"
+          className="flex-grow p-4 bg-cover bg-center bg-no-repeat "
           style={{
             backgroundImage:
-              "linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('/images/bottles-bg.png')",
+              "linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.2)), url('/images/bottles-bg.png')",
           }}
         >
           {activeTab === "all" && (
@@ -222,119 +199,19 @@ export default function BottlesPage() {
             </div>
           )}
           {activeTab === "drop" && (
-            <div>
-              <h2 className="text-3xl font-extrabold mb-6 text-shadow">
-                Drop a Bottle
-              </h2>
-              <div className="flex flex-col space-y-4">
-                <input
-                  className="p-2 border rounded-md"
-                  placeholder="Enter your message"
-                  type="text"
-                />
-                <button className="p-2 bg-blue-500 text-white rounded-md">
-                  Drop Bottle
-                </button>
-              </div>
+            <div className="flex justify-center items-center h-full">
+              <MintForm />
             </div>
           )}
         </div>
       </div>
 
-      {/* Bottle content dialog */}
-      <Modal
+      <BottleModal
         isOpen={isOpen}
+        selectedBottle={selectedBottle}
         onOpenChange={onOpenChange}
-        size="5xl" // 更改为更大的预定义尺寸
-        classNames={{
-          base: "max-w-[1000px] w-full", // 添加自定义类名来控制最大宽度
-        }}
-      >
-        <ModalContent>
-          {(onClose) => (
-            <>
-              <ModalHeader className="flex flex-col gap-1">
-                {selectedBottle && `From: ${getFromId(selectedBottle)}`}
-              </ModalHeader>
-              <ModalBody className="max-h-[70vh] overflow-y-auto">
-                {selectedBottle && (
-                  <div className="space-y-4">
-                    <p className="text-sm text-gray-600">
-                      Created at: {selectedBottle.createAt}
-                    </p>
-                    {selectedBottle.msgs.map((msg, index) => (
-                      <div
-                        key={index}
-                        className="border-t pt-2 first:border-t-0 first:pt-0"
-                      >
-                        {msg.mediaType === "text" ? (
-                          <p className="whitespace-pre-wrap break-words">
-                            {msg.content}
-                          </p>
-                        ) : (
-                          <img
-                            src={msg.content}
-                            alt="Message image"
-                            className="w-full h-auto"
-                          />
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                )}
-                {/* Add reply form */}
-                <div className="mt-4 space-y-2">
-                  <textarea
-                    className="w-full p-2 border rounded-md"
-                    rows={3}
-                    placeholder="Enter your reply..."
-                    value={replyMessage}
-                    onChange={(e) => setReplyMessage(e.target.value)}
-                  />
-                  <div className="flex items-center space-x-2">
-                    <Button
-                      className="bg-gray-200 text-gray-800"
-                      onClick={triggerFileInput}
-                    >
-                      Upload Image
-                    </Button>
-                    {replyImage && (
-                      <span className="text-sm text-gray-600">
-                        {replyImage.name}
-                      </span>
-                    )}
-                    <input
-                      type="file"
-                      ref={fileInputRef}
-                      className="hidden"
-                      accept="image/*"
-                      onChange={handleImageUpload}
-                    />
-                  </div>
-                </div>
-              </ModalBody>
-              <ModalFooter>
-                <Button
-                  className="bg-[#fb0c0c] text-white hover:bg-[#d80a0a] w-auto mx-auto mt-3 rounded-full 
-                transition-all duration-300 hover:shadow-xl hover:scale-105
-                "
-                  onPress={handleReply}
-                >
-                  Send Reply
-                </Button>
-                <Button
-                  className="bg-gray-500 text-white hover:bg-gray-600 w-auto mx-auto mt-3 rounded-full 
-                  transition-all duration-300 hover:shadow-xl hover:scale-105
-                  "
-                  onPress={onClose}
-                >
-                  Close
-                </Button>
-              </ModalFooter>
-            </>
-          )}
-        </ModalContent>
-      </Modal>
+        onReply={handleReply}
+      />
     </DefaultLayout>
   );
 }
