@@ -27,7 +27,7 @@ This project is a social game based on the Sui blockchain where users can make n
 
 ### Clone the Project
 ```bash
-git clone https://github.com/your-repo/drift-bottle.git
+git clone https://github.com/DriftBottleOnSui/social-bottles.git
 ```
 
 ### Install Dependencies
