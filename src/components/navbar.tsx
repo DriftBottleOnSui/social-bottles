@@ -28,7 +28,6 @@ export const Navbar = () => {
   const bottleCount = new Set(bottles.map((bottle) => bottle.id)).size;
   const { isConnected, currentNetwork, isWrongNetwork, expectedNetwork } =
     useNetwork();
-  console.log(isConnected, isWrongNetwork, expectedNetwork, currentNetwork);
 
   return (
     <NextUINavbar
