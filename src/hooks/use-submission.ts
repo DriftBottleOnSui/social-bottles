@@ -72,13 +72,34 @@ export function useSubmission(objectId?: string) {
     }
 
     if (image) {
-      if (image.type !== "image/jpeg" && image.type !== "image/png") {
-        toast.error("Please upload a JPG or PNG image");
 
+      const validImageTypes = ["image/jpeg", "image/png", "image/gif"];
+      const validAudioTypes = [
+        "audio/mpeg", // MP3
+        "audio/wav",  // WAV
+        "audio/ogg",  // OGG
+        "audio/flac", // FLAC
+      ];
+      const validVideoTypes = [
+        "video/mp4",    // MP4
+        "video/webm",   // WebM
+        "video/ogg",    // OGG
+        "video/x-matroska", // MKV
+      ];
+    
+      // 检查文件类型
+      if (
+        !validImageTypes.includes(image.type) &&
+        !validAudioTypes.includes(image.type) &&
+        !validVideoTypes.includes(image.type)
+      ) {
+        toast.error("Please upload a valid image, audio, or video file");
         return;
       }
-      if (image.size > 5 * 1024 * 1024) {
-        toast.error("File size cannot exceed 5MB");
+
+
+      if (image.size > 50 * 1024 * 1024) {
+        toast.error("File size cannot exceed 50MB");
 
         return;
       }

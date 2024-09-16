@@ -57,16 +57,31 @@ export async function getBlob(id: string) {
         header[3] === 0x47) || // PNG
       (header[0] === 0x47 && header[1] === 0x49 && header[2] === 0x46); // GIF
 
+    const isAudio =
+      (header[0] === 0x49 && header[1] === 0x44 && header[2] === 0x33) || // MP3
+      (header[0] === 0x4f && header[1] === 0x67 && header[2] === 0x67); // OGG
+
+    const isVideo =
+      (header[4] === 0x66 && header[5] === 0x74 && header[6] === 0x79 && header[7] === 0x70); // MP4
+
     if (isImage) {
-      // 如果是图片，返回完整的URL
       return {
         content: `${WALRUS_AGGREGATOR_URL}/v1/${id}`,
         mediaType: "image",
       };
+    } else if (isAudio) {
+      return {
+        content: `${WALRUS_AGGREGATOR_URL}/v1/${id}`,
+        mediaType: "audio",
+      };
+    } else if (isVideo) {
+      return {
+        content: `${WALRUS_AGGREGATOR_URL}/v1/${id}`,
+        mediaType: "video",
+      };
     } else {
-      // 如果不是图片，假设是文本，直接解码并返回内容
+      // 假设是文本，直接解码并返回内容
       const decoder = new TextDecoder();
-
       return {
         content: decoder.decode(buffer),
         mediaType: "text",

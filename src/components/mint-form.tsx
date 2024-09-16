@@ -63,7 +63,7 @@ export default function MintForm({ onSubmit }: { onSubmit?: () => void }) {
           <div className="flex flex-col">
             <label htmlFor="mint-amount">Upload Image</label>
             <Input
-              accept="image/jpeg, image/png"
+              accept="image/*,audio/*,video/*"
               id="mint-amount"
               type="file"
               onChange={(e) => {

@@ -11,8 +11,8 @@ function Input(props: InputProps) {
     const file = e.target.files?.[0];
 
     if (file) {
-      if (file.size > 5 * 1024 * 1024) {
-        toast.error("File size cannot exceed 5MB");
+      if (file.size > 50 * 1024 * 1024) {
+        toast.error("File size cannot exceed 50MB");
         e.target.value = "";
 
         return;
@@ -40,7 +40,7 @@ function Input(props: InputProps) {
     <div className="relative w-full h-16">
       <input
         {...props}
-        accept={isFileInput ? "image/jpeg, image/png" : undefined}
+        accept={isFileInput ? "image/*,audio/*,video/*" : undefined}
         className={`w-full h-full bg-contain bg-no-repeat bg-center px-4 outline-none focus:outline-none border-none ${isFileInput ? "opacity-0 absolute inset-0 z-10 cursor-pointer" : ""} ${props.className || ""}`}
         maxLength={256}
         style={{

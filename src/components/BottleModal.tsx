@@ -58,6 +58,21 @@ export default function BottleModal({
     fileInputRef.current?.click();
   };
 
+  const renderMessageContent = (msg: any) => {
+    switch (msg.mediaType) {
+      case "text":
+        return <p className="whitespace-pre-wrap break-words">{msg.content}</p>;
+      case "image":
+        return <Image alt="Message content" className="w-full h-auto" src={msg.content} />;
+      case "audio":
+        return <audio controls src={msg.content} />;
+      case "video":
+        return <video controls className="w-full" src={msg.content} />;
+      default:
+        return null;
+    }
+  };
+
   return (
     <Modal
       classNames={{
@@ -84,17 +99,7 @@ export default function BottleModal({
                       key={index}
                       className="border-t pt-2 first:border-t-0 first:pt-0"
                     >
-                      {msg.mediaType === "text" ? (
-                        <p className="whitespace-pre-wrap break-words">
-                          {msg.content}
-                        </p>
-                      ) : (
-                        <Image
-                          alt="Message content"
-                          className="w-full h-auto"
-                          src={msg.content}
-                        />
-                      )}
+                      {renderMessageContent(msg)}
                     </div>
                   ))}
                 </div>
@@ -115,7 +120,7 @@ export default function BottleModal({
                     className="bg-gray-200 text-gray-800"
                     onClick={triggerFileInput}
                   >
-                    Upload Image
+                    Upload File
                   </Button>
                   {replyImage && (
                     <span className="text-sm text-gray-600">
@@ -124,7 +129,7 @@ export default function BottleModal({
                   )}
                   <input
                     ref={fileInputRef}
-                    accept="image/*"
+                    accept="*,audio/*image/,video/*"
                     className="hidden"
                     type="file"
                     onChange={handleImageUpload}
