@@ -101,7 +101,7 @@ export default function BottlesPage() {
           className="flex-grow p-4 bg-cover bg-center bg-no-repeat overflow-y-auto"
           style={{
             backgroundImage:
-              "linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.2)), url('/images/bottles-bg.png')",
+              "linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.2)), url('/images/bottles-bg.webp')",
           }}
         >
           {(activeTab === "bottles" || activeTab === "friends") &&
