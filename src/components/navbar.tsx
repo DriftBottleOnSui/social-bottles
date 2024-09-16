@@ -14,6 +14,7 @@ import { useLocation, Link as RouterLink } from "react-router-dom";
 
 import { useBottles } from "@/hooks/useBottles";
 import siteConfig from "@/config";
+import useNetwork from "@/hooks/use-network";
 
 export const Navbar = () => {
   const location = useLocation();
@@ -25,6 +26,9 @@ export const Navbar = () => {
   const { bottles } = useBottles();
   const userCount = new Set(bottles.map((bottle) => bottle.from)).size;
   const bottleCount = new Set(bottles.map((bottle) => bottle.id)).size;
+  const { isConnected, currentNetwork, isWrongNetwork, expectedNetwork } =
+    useNetwork();
+  console.log(isConnected, isWrongNetwork, expectedNetwork, currentNetwork);
 
   return (
     <NextUINavbar
@@ -56,7 +60,7 @@ export const Navbar = () => {
               className={clsx(
                 "relative",
                 location.pathname === item.href &&
-                  "after:content-[''] after:absolute after:bottom-0 after:left-0 mx-4 after:w-full after:h-[3px] after:bg-[#FB0C0C]",
+                  "after:content-[''] after:absolute after:bottom-0 after:left-0 mx-4 after:w-full after:h-[3px] after:bg-[#FB0C0C]"
               )}
               isActive={location.pathname === item.href}
             >
@@ -64,7 +68,7 @@ export const Navbar = () => {
                 className={clsx(
                   "data-[active=true]:text-white data-[active=true]:font-medium",
                   "hover:text-white",
-                  "text-4xl",
+                  "text-4xl"
                 )}
                 data-active={location.pathname === item.href}
                 to={item.href}
@@ -91,7 +95,13 @@ export const Navbar = () => {
             <span className="font-bold text-green-500">{bottleCount}</span>
           </div>
         </div>
-        <ConnectButton className="bg-[#FB0C0C] text-white text-2xl font-bold px-6 py-2 rounded-lg hover:bg-[#D80A0A] transition-colors duration-300" />
+        {isConnected && isWrongNetwork ? (
+          <p className="bg-[#FB0C0C] text-white p-2 rounded-md">
+            Please switch to {expectedNetwork}
+          </p>
+        ) : (
+          <ConnectButton className="bg-[#FB0C0C] text-white text-2xl font-bold px-6 py-2 rounded-lg hover:bg-[#D80A0A] transition-colors duration-300" />
+        )}
       </NavbarContent>
 
       <NavbarContent className="sm:hidden basis-1 pl-4" justify="end">
@@ -108,7 +118,7 @@ export const Navbar = () => {
                   "text-4xl",
                   location.pathname === item.href
                     ? "text-white font-medium"
-                    : "",
+                    : ""
                 )}
                 to={item.href}
                 onClick={closeMenu}
@@ -118,7 +128,13 @@ export const Navbar = () => {
             </NavbarMenuItem>
           ))}
           <NavbarMenuItem>
-            <ConnectButton className="bg-[#FB0C0C] text-white text-2xl font-bold px-6 py-2 rounded-lg hover:bg-[#D80A0A] transition-colors duration-300" />
+            {isConnected && isWrongNetwork ? (
+              <p className="bg-[#FB0C0C] text-white p-2 rounded-md">
+                Please switch to {expectedNetwork}
+              </p>
+            ) : (
+              <ConnectButton className="bg-[#FB0C0C] text-white text-2xl font-bold px-6 py-2 rounded-lg hover:bg-[#D80A0A] transition-colors duration-300" />
+            )}
           </NavbarMenuItem>
         </div>
       </NavbarMenu>
